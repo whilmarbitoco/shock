@@ -1,7 +1,9 @@
 package org.whilmarbitoco.core.http;
-import org.whilmarbitoco.core.MiddlewareRegistry;
+import org.whilmarbitoco.core.HttpException;
+import org.whilmarbitoco.core.registry.MiddlewareRegistry;
 import org.whilmarbitoco.core.RouteHandler;
 import org.whilmarbitoco.core.Router;
+import org.whilmarbitoco.exception.NotFoundException;
 
 import java.io.*;
 import java.net.*;
@@ -79,7 +81,7 @@ public class Server {
         RouteHandler handler = router.getRoutes().get(method.toUpperCase()).get(path);
 
         if (handler == null) {
-            throw new RuntimeException(method + " /" + path + " not registered");
+            throw new NotFoundException(method + " /" + path + " not registered");
         }
 
         for (String m : handler.getMiddlewares()) {

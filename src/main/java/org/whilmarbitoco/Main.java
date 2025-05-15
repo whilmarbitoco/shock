@@ -1,8 +1,8 @@
 package org.whilmarbitoco;
 
 import org.whilmarbitoco.core.Application;
-import org.whilmarbitoco.core.MiddlewareRegistry;
-import org.whilmarbitoco.core.RouteRegistry;
+import org.whilmarbitoco.core.registry.MiddlewareRegistry;
+import org.whilmarbitoco.core.registry.RouteRegistry;
 import org.whilmarbitoco.registry.Middleware;
 import org.whilmarbitoco.registry.Route;
 
