@@ -7,9 +7,9 @@ import org.whilmarbitoco.core.utils.File;
 
 public class UserController extends Controller {
 
-    public static void get(Request request, Response response) {
+    public static String get(Request request, Response response) {
         String search = (String) request.getParam("search");
 
-        response.send(search);
+        return view.render("Hello World");
     }
 }

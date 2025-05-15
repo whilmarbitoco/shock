@@ -47,7 +47,7 @@ public class Response {
 
     public void contentType(MimeType mimeType) {
         this.mimeType = mimeType;
-        headers.put("Content-Type", mimeType.getType());
+        headers.put("Content-Type", this.mimeType.getType());
     }
 
     public void redirect(String path) {

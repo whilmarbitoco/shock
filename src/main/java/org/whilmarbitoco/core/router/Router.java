@@ -60,7 +60,8 @@ public class Router {
             m.handle(request, response);
         }
 
-        route.get(path).getFunc().handle(request, response);
+        String view = route.get(path).getFunc().handle(request, response);
+        response.send(view);
 
     }
 
