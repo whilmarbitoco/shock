@@ -1,27 +1,23 @@
 package org.whilmarbitoco.core;
 
 import org.whilmarbitoco.core.http.Server;
-import org.whilmarbitoco.route.Route;
 
-import java.time.LocalDate;
 
 public class Application {
 
-    private final RouteRegistry registry;
+    private final RouteRegistry routes;
+    private final MiddlewareRegistry middlewares;
     private final Server server;
 
 
-    public Application(RouteRegistry registry) {
-        this.registry = new Route();
-        this.server = new Server(Config.serverPort(), registry.getRouter());
+    public Application(RouteRegistry routes, MiddlewareRegistry middlewares) {
+        this.routes = routes;
+        this.middlewares = middlewares;
+        this.server = new Server(Config.serverPort(), routes.getRouter(), middlewares);
     }
 
     public void run() {
-//        server.setRouter(registry.getRouter());
-        server.use(((request, response) -> {
-            System.out.print(LocalDate.now() + " :: ");
-            System.out.println(request.getMethod() + " " + request.getPath());
-        }));
+        server.useGlobal(middlewares.globalMiddlewares());
 
 
 

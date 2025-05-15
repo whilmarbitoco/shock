@@ -1,18 +1,19 @@
 package org.whilmarbitoco.core;
 
 import org.whilmarbitoco.core.http.HttpRunnable;
+import org.whilmarbitoco.core.http.Middleware;
 import org.whilmarbitoco.core.http.Request;
 import org.whilmarbitoco.core.http.Response;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Router {
 
-    private final Map<String, Map<String, HttpRunnable>> routes;
+    private final Map<String, Map<String, RouteHandler>> routes = new HashMap<>();
 
     public Router() {
-        routes = new HashMap<>();
         routes.put("GET", new HashMap<>());
         routes.put("POST", new HashMap<>());
         routes.put("DELETE", new HashMap<>());
@@ -20,30 +21,27 @@ public class Router {
     }
 
     public void get(String path, HttpRunnable func) {
-        if (routes.get("GET").containsKey(path)) {
-            throw new RuntimeException("GET /" + path + " already registered");
-        }
+        registerRoute("GET", path, func);
 
-        routes.get("GET").put(path, func);
+    }
+
+    public void get(String path, HttpRunnable func, String... middlewareNames) {
+        registerRoute("GET", path, func, middlewareNames);
     }
 
     public void post(String path, HttpRunnable func) {
-        if (routes.get("GET").containsKey(path)) {
-            throw new RuntimeException("POST /" + path + " already registered");
-        }
-
-        routes.get("POST").put(path, func);
+        registerRoute("POST", path, func);
     }
 
-    public void assertRoute(String method, String path, Request req, Response res) {
-        if (routes.get(method.toUpperCase()).isEmpty()) {
-            System.out.println("Empty routes");
-            return;
+    private void registerRoute(String method, String path, HttpRunnable func, String... middlewares) {
+        if (routes.get(method).containsKey(path)) {
+            throw new RuntimeException(method + " /" + path + " already registered");
         }
 
-        if (routes.get(method.toUpperCase()).containsKey(path)) {
-            routes.get(method.toUpperCase()).get(path).handle(req, res);
-        }
+        routes.get(method).put(path, new RouteHandler(func, middlewares));
     }
 
+    public Map<String, Map<String, RouteHandler>> getRoutes() {
+        return routes;
+    }
 }

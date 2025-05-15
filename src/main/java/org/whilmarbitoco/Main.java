@@ -1,13 +1,18 @@
 package org.whilmarbitoco;
 
 import org.whilmarbitoco.core.Application;
+import org.whilmarbitoco.core.MiddlewareRegistry;
 import org.whilmarbitoco.core.RouteRegistry;
-import org.whilmarbitoco.route.Route;
+import org.whilmarbitoco.registry.Middleware;
+import org.whilmarbitoco.registry.Route;
+
 
 class Main {
     public static void main(String[] args) {
         RouteRegistry routes = new Route();
-        Application app = new Application(routes);
+        MiddlewareRegistry middlewares = new Middleware();
+
+        Application app = new Application(routes, middlewares);
 
         app.run();
     }

@@ -1,6 +1,6 @@
 package org.whilmarbitoco.core.http;
-import org.whilmarbitoco.core.Middleware;
-import org.whilmarbitoco.core.RouteRegistry;
+import org.whilmarbitoco.core.MiddlewareRegistry;
+import org.whilmarbitoco.core.RouteHandler;
 import org.whilmarbitoco.core.Router;
 
 import java.io.*;
@@ -11,17 +11,19 @@ import java.util.List;
 public class Server {
 
     private final int port;
-    private final List<Middleware> middlewares = new ArrayList<>();
-    private Router router;
+    private final Router router;
+    private final List<Middleware> globalMiddleware = new ArrayList<>();
+    private final MiddlewareRegistry middlewares;
 
-    public Server(int port, Router router) {
+    public Server(int port, Router router, MiddlewareRegistry middleware) {
         this.port = port;
         this.router = router;
+        this.middlewares = middleware;
     }
 
 
-    public void use(Middleware middleware) {
-        middlewares.add(middleware);
+    public void useGlobal(List<Middleware> middleware) {
+        globalMiddleware.addAll(middleware);
     }
 
     public void start() {
@@ -57,12 +59,12 @@ public class Server {
             Response response = new Response();
 
             // Apply middlewares
-            for (Middleware middleware : middlewares) {
+            for (Middleware middleware : globalMiddleware) {
                 middleware.handle(request, response);
                 if (response.isHandled()) break;
             }
 
-            router.assertRoute(request.getMethod(), request.getPath(), request, response);
+            assertRoute(request.getMethod(), request.getPath(), request, response);
 
             // Send response
             out.write(response.toString().getBytes());
@@ -71,5 +73,18 @@ public class Server {
         } catch (IOException e) {
             throw new RuntimeException("Something went wrong");
         }
+    }
+
+    private void assertRoute(String method, String path, Request req, Response res) {
+        RouteHandler handler = router.getRoutes().get(method.toUpperCase()).get(path);
+
+        if (handler == null) {
+            throw new RuntimeException(method + " /" + path + " not registered");
+        }
+
+        for (String m : handler.getMiddlewares()) {
+            middlewares.getMiddleware(m).handle(req, res);
+        }
+        handler.getFunc().handle(req, res);
     }
 }
