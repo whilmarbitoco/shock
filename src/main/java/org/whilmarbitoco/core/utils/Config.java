@@ -40,6 +40,9 @@ public class Config {
         return props.getProperty("view.template");
     }
 
+    public static String resources() {
+        return (System.getProperty("user.dir") + "/src/main/resources/");
+    }
 
     public static boolean debug() {
         return props.getProperty("db.debug").equals("true");

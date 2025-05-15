@@ -1,5 +1,7 @@
 package org.whilmarbitoco.core.http;
 
+import org.whilmarbitoco.core.View;
+
 public interface HttpRunnable {
-    String handle(Request request, Response response);
+    View handle(Request request, Response response);
 }

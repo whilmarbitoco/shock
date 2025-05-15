@@ -1,6 +1,7 @@
 package org.whilmarbitoco.core.router;
 
-import org.whilmarbitoco.core.HttpException;
+import org.whilmarbitoco.core.View;
+import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.http.HttpRunnable;
 import org.whilmarbitoco.core.http.Middleware;
 import org.whilmarbitoco.core.http.Request;
@@ -60,8 +61,8 @@ public class Router {
             m.handle(request, response);
         }
 
-        String view = route.get(path).getFunc().handle(request, response);
-        response.send(view);
+        View view = route.get(path).getFunc().handle(request, response);
+        response.send(view.toString());
 
     }
 

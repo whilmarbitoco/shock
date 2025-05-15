@@ -5,13 +5,29 @@ import org.whilmarbitoco.core.utils.File;
 
 public class View {
 
-    protected static String viewPath = System.getProperty("user.dir") + "/src/main/resources/view/";
-    protected static String template = viewPath + "template/" + Config.viewTemplate();
+    protected String viewPath = Config.resources() + "view/";
+    protected String template = viewPath + "template/" + Config.viewTemplate();
+    protected String content = template;
 
-    public String render(String view) {
+    public View() {}
 
-        String tmp = File.loadContent(template);
+    public View(String view) {
+        content = view;
+    }
 
-        return tmp.replace("{{content}}", view);
+    public void template(String file) {
+        template = viewPath + file;
+    }
+
+    @Override
+    public String toString() {
+        return assertContent();
+    }
+
+    private String assertContent() {
+        if (content.endsWith(".html")) {
+            return File.loadContent(viewPath + content);
+        }
+        return File.loadContent(template).replace("{{content}}", content);
     }
 }

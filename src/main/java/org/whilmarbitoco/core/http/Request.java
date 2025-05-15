@@ -1,5 +1,9 @@
 package org.whilmarbitoco.core.http;
 
+import org.whilmarbitoco.core.exception.HttpException;
+import org.whilmarbitoco.exception.InternalServerException;
+import org.whilmarbitoco.exception.NotFoundException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,16 +20,18 @@ public class Request {
         this.path = path;
     }
 
-    public void setParams(String uriParam) {
+    public void setParams(String uriParam) throws HttpException {
         if (uriParam.isEmpty()) return;
         String[] paramPair = uriParam.split("&");
 
-        for (String pairs : paramPair) {
-            String[] pair = pairs.split("=");
-            params.putIfAbsent(pair[0], pair[1]);
+        try {
+            for (String pairs : paramPair) {
+                String[] pair = pairs.split("=");
+                params.putIfAbsent(pair[0], pair[1]);
+            }
+        } catch (Exception e) {
+            throw new NotFoundException("Parameter key not found");
         }
-
-        System.out.println(params);
     }
 
     public Object getParam(String key) {

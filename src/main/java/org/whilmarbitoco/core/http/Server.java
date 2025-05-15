@@ -1,5 +1,6 @@
 package org.whilmarbitoco.core.http;
-import org.whilmarbitoco.core.HttpException;
+import org.whilmarbitoco.core.View;
+import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.router.Router;
 
 import java.io.*;
@@ -51,20 +52,22 @@ public class Server {
             }
 
             Request request = new Request(parts[0], uri);
-            request.setParams(params);
             Response response = new Response(uri);
 
-            String line;
-            while ((line = in.readLine()) != null && !line.isEmpty()) {
-                String[] header = line.split(":");
-                request.addHeader(header[0], header[1]);
-            }
-
             try {
+                request.setParams(params);
+
+                String line;
+                while ((line = in.readLine()) != null && !line.isEmpty()) {
+                    String[] header = line.split(":");
+                    request.addHeader(header[0], header[1]);
+                }
+
                 router.resolve(request, response);
             } catch (HttpException e) {
-                response.setStatus(e.getCode());
-                response.send(e.getMessage());
+                View view = new View(e.getMessage());
+                view.template("template/error.html");
+                response.send(view.toString());
             } finally {
                 out.write(response.toString().getBytes());
                 out.flush();

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wb2c0NET - Modern Java MVC Framework</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-image: linear-gradient(to bottom, #1a202c, #12171f);
+            background-color: #1a202c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #f7fafc;
+        }
+
+        .container {
+            text-align: center;
+            padding: 3rem;
+            border-radius: 1rem;
+            /* Removed background-color, box-shadow, and backdrop-filter */
+            max-width: 90%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .main-heading {
+            font-size: 3rem;
+            font-weight: 800;
+            /* Removed color: #f56565; */
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+            /* Removed text-shadow */
+            background: linear-gradient(to right, #f56565, #ed8936); /* Gradient for text */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block; /* Important for the gradient to work */
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            color: #e2e8f0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+            max-width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.25rem;
+            background-color: #f56565;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            font-size: 1.25rem;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background-color: #ed8936;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .features {
+            margin-top: 5rem;
+            text-align: left;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .features-heading {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .feature-item {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            background-color: rgba(255, 255, 255, 0.04);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            backdrop-filter: blur(7px);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-item strong {
+            color: #f56565;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                width: 80%;
+            }
+
+            .feature-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                width: 70%;
+            }
+
+            .feature-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="main-heading">wb2c0NET</h1>
+    <p class="tagline">A modern, lightweight, and efficient Java MVC web framework for building robust and scalable web applications.</p>
+    <a href="#" class="cta-button">Get Started</a>
+
+    <div class="features">
+        <h2 class="features-heading">Key Features</h2>
+        <ul class="feature-list">
+            <li class="feature-item">
+                <strong>Modern Architecture:</strong> Built with a focus on modern design principles and best practices.
+            </li>
+            <li class="feature-item">
+                <strong>Lightweight & Fast:</strong> Minimal overhead and optimized for high performance.
+            </li>
+            <li class="feature-item">
+                <strong>MVC Pattern:</strong> Clean and organized code with a strong separation of concerns.
+            </li>
+            <li class="feature-item">
+                <strong>Dynamic Routing:</strong> Flexible and intuitive routing system for easy URL mapping.
+            </li>
+            <li class="feature-item">
+                <strong>Customizable Error Handling:</strong>  Create elegant and informative error pages.
+            </li>
+            <li class="feature-item">
+                <strong>Scalable:</strong> Designed to handle growing traffic and complexity.
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
