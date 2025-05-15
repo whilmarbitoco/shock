@@ -1,13 +1,16 @@
 package org.whilmarbitoco.core.http;
 import org.whilmarbitoco.core.HttpException;
+import org.whilmarbitoco.core.context.ResponseContext;
 import org.whilmarbitoco.core.registry.MiddlewareRegistry;
 import org.whilmarbitoco.core.RouteHandler;
 import org.whilmarbitoco.core.Router;
+import org.whilmarbitoco.exception.InternalServerException;
 import org.whilmarbitoco.exception.NotFoundException;
 
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Server {
@@ -46,47 +49,60 @@ public class Server {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              OutputStream out = clientSocket.getOutputStream()) {
 
-            // Read the request line
             String requestLine = in.readLine();
             if (requestLine == null) return;
-
-            // Parse request
             String[] parts = requestLine.split(" ");
             if (parts.length != 3) return;
 
-            String method = parts[0];
-            String path = parts[1];
+            Request request = new Request(parts[0], parts[1]);
+            Response response = new Response(parts[1]);
+            ResponseContext.set(response);
 
-            Request request = new Request(method, path);
-            Response response = new Response();
-
-            // Apply middlewares
-            for (Middleware middleware : globalMiddleware) {
-                middleware.handle(request, response);
-                if (response.isHandled()) break;
+            String line;
+            while ((line = in.readLine()) != null && !line.isEmpty()) {
+                String[] header = line.split(":");
+                request.addHeader(header[0], header[1]);
             }
 
             assertRoute(request.getMethod(), request.getPath(), request, response);
 
-            // Send response
-            out.write(response.toString().getBytes());
+            out.write(ResponseContext.get().toString().getBytes());
             out.flush();
 
         } catch (IOException e) {
-            throw new RuntimeException("Something went wrong");
+            throw new InternalServerException("Internal Server Error");
+        } finally {
+            ResponseContext.remove();
         }
     }
 
     private void assertRoute(String method, String path, Request req, Response res) {
-        RouteHandler handler = router.getRoutes().get(method.toUpperCase()).get(path);
 
+        var methodRoutes = router.getRoutes().get(method.toUpperCase());
+        if (methodRoutes == null) {
+            throw new NotFoundException("Method " + method + " empty");
+        }
+
+        RouteHandler handler = methodRoutes.get(path);
         if (handler == null) {
-            throw new NotFoundException(method + " /" + path + " not registered");
+            throw new NotFoundException("Path " + path + " not registered for method " + method);
         }
 
-        for (String m : handler.getMiddlewares()) {
-            middlewares.getMiddleware(m).handle(req, res);
+        try {
+            for (String middlewareName : handler.getMiddlewares()) {
+                Middleware middleware = middlewares.getMiddleware(middlewareName);
+                if (middleware != null) {
+                    middleware.handle(req, res);
+                } else {
+                    throw new InternalServerException("Middleware " + middlewareName + " not found.");
+                }
+            }
+
+            handler.getFunc().handle(req, res);
+
+        } catch (Exception e) {
+            throw new InternalServerException("Error handling route " + method + " " + path);
         }
-        handler.getFunc().handle(req, res);
     }
+
 }

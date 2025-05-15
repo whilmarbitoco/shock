@@ -4,7 +4,6 @@ import org.whilmarbitoco.core.http.Server;
 import org.whilmarbitoco.core.registry.MiddlewareRegistry;
 import org.whilmarbitoco.core.registry.RouteRegistry;
 import org.whilmarbitoco.core.utils.Config;
-import org.whilmarbitoco.exception.GlobalException;
 import org.whilmarbitoco.registry.Exception;
 
 
@@ -24,8 +23,8 @@ public class Application {
     }
 
     public void run() {
-        globalException.exceptionHandler();
         server.useGlobal(middlewares.globalMiddlewares());
+        globalException.exceptionHandler();
 
         server.start();
     }
