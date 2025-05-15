@@ -14,10 +14,15 @@ public class Response {
     private boolean handled = false;
     private MimeType mimeType = MimeType.HTML;
     private String location;
+    private int statusCode = 200;
 
     public Response(String location) {
         this.location = location;
         setDefaultHeaders();
+    }
+
+    public void setStatus(int statusCode) {
+        this.statusCode = statusCode;
     }
 
     private void setDefaultHeaders() {
@@ -57,10 +62,8 @@ public class Response {
     @Override
     public String toString() {
         headers.put("Content-Length", String.valueOf(body.length()));
-
         StringBuilder responseBuilder = new StringBuilder();
-        responseBuilder.append("HTTP/1.1 301 Found\r\n");
-
+        responseBuilder.append("HTTP/1.1 ").append(statusCode).append("\r\n");
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             responseBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
         }

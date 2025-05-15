@@ -1,6 +1,6 @@
 package org.whilmarbitoco.core.registry;
 
-import org.whilmarbitoco.core.Router;
+import org.whilmarbitoco.core.router.Router;
 
 public abstract class RouteRegistry {
 

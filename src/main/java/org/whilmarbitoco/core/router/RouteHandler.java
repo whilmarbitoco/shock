@@ -1,8 +1,6 @@
-package org.whilmarbitoco.core;
+package org.whilmarbitoco.core.router;
 
 import org.whilmarbitoco.core.http.HttpRunnable;
-
-import java.util.List;
 
 public class RouteHandler {
 

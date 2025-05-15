@@ -3,7 +3,7 @@ package org.whilmarbitoco.registry;
 import org.whilmarbitoco.core.registry.MiddlewareRegistry;
 import org.whilmarbitoco.http.middleware.LogsMiddleware;
 
-public class Middleware extends MiddlewareRegistry {
+public class Middlewares extends MiddlewareRegistry {
 
     @Override
     public void global() {
@@ -12,6 +12,5 @@ public class Middleware extends MiddlewareRegistry {
 
     @Override
     public void register() {
-        add("log", new LogsMiddleware());
     }
 }

@@ -1,34 +1,18 @@
 package org.whilmarbitoco.core.http;
 import org.whilmarbitoco.core.HttpException;
-import org.whilmarbitoco.core.context.ResponseContext;
-import org.whilmarbitoco.core.registry.MiddlewareRegistry;
-import org.whilmarbitoco.core.RouteHandler;
-import org.whilmarbitoco.core.Router;
-import org.whilmarbitoco.exception.InternalServerException;
-import org.whilmarbitoco.exception.NotFoundException;
+import org.whilmarbitoco.core.router.Router;
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Server {
 
     private final int port;
     private final Router router;
-    private final List<Middleware> globalMiddleware = new ArrayList<>();
-    private final MiddlewareRegistry middlewares;
 
-    public Server(int port, Router router, MiddlewareRegistry middleware) {
+    public Server(int port, Router router) {
         this.port = port;
         this.router = router;
-        this.middlewares = middleware;
-    }
-
-
-    public void useGlobal(List<Middleware> middleware) {
-        globalMiddleware.addAll(middleware);
     }
 
     public void start() {
@@ -41,7 +25,7 @@ public class Server {
                 new Thread(() -> handleClient(clientSocket)).start();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -54,9 +38,21 @@ public class Server {
             String[] parts = requestLine.split(" ");
             if (parts.length != 3) return;
 
-            Request request = new Request(parts[0], parts[1]);
-            Response response = new Response(parts[1]);
-            ResponseContext.set(response);
+            String uriWithParams = parts[1];
+            String uri;
+            String params = "";
+
+            int hasParam = uriWithParams.indexOf("?");
+            if (hasParam != -1) {
+                uri = uriWithParams.substring(0, hasParam);
+                params = uriWithParams.substring(hasParam + 1);
+            } else {
+                uri = uriWithParams;
+            }
+
+            Request request = new Request(parts[0], uri);
+            request.setParams(params);
+            Response response = new Response(uri);
 
             String line;
             while ((line = in.readLine()) != null && !line.isEmpty()) {
@@ -64,45 +60,20 @@ public class Server {
                 request.addHeader(header[0], header[1]);
             }
 
-            assertRoute(request.getMethod(), request.getPath(), request, response);
-
-            out.write(ResponseContext.get().toString().getBytes());
-            out.flush();
-
-        } catch (IOException e) {
-            throw new InternalServerException("Internal Server Error");
-        } finally {
-            ResponseContext.remove();
-        }
-    }
-
-    private void assertRoute(String method, String path, Request req, Response res) {
-
-        var methodRoutes = router.getRoutes().get(method.toUpperCase());
-        if (methodRoutes == null) {
-            throw new NotFoundException("Method " + method + " empty");
-        }
-
-        RouteHandler handler = methodRoutes.get(path);
-        if (handler == null) {
-            throw new NotFoundException("Path " + path + " not registered for method " + method);
-        }
-
-        try {
-            for (String middlewareName : handler.getMiddlewares()) {
-                Middleware middleware = middlewares.getMiddleware(middlewareName);
-                if (middleware != null) {
-                    middleware.handle(req, res);
-                } else {
-                    throw new InternalServerException("Middleware " + middlewareName + " not found.");
-                }
+            try {
+                router.resolve(request, response);
+            } catch (HttpException e) {
+                response.setStatus(e.getCode());
+                response.send(e.getMessage());
+            } finally {
+                out.write(response.toString().getBytes());
+                out.flush();
             }
 
-            handler.getFunc().handle(req, res);
-
-        } catch (Exception e) {
-            throw new InternalServerException("Error handling route " + method + " " + path);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
+
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 public class Request {
 
     private final Map<String, String> headers = new HashMap<>();
+    private final Map<String, Object> params = new HashMap<>();
 
     private final String method;
     private final String path;
@@ -13,6 +14,22 @@ public class Request {
     public Request(String method, String path) {
         this.method = method;
         this.path = path;
+    }
+
+    public void setParams(String uriParam) {
+        if (uriParam.isEmpty()) return;
+        String[] paramPair = uriParam.split("&");
+
+        for (String pairs : paramPair) {
+            String[] pair = pairs.split("=");
+            params.putIfAbsent(pair[0], pair[1]);
+        }
+
+        System.out.println(params);
+    }
+
+    public Object getParam(String key) {
+        return params.get(key);
     }
 
     public void addHeader(String header, String content) {

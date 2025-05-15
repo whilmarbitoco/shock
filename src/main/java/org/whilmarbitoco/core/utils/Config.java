@@ -36,6 +36,11 @@ public class Config {
         return props.getProperty("db.password");
     }
 
+    public static String viewTemplate() {
+        return props.getProperty("view.template");
+    }
+
+
     public static boolean debug() {
         return props.getProperty("db.debug").equals("true");
     }

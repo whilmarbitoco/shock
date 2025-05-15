@@ -1,6 +1,6 @@
 package org.whilmarbitoco.core;
 
-public class HttpException extends RuntimeException {
+public class HttpException extends Exception {
 
     private int code;
 
