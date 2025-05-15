@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page for MVC Framework</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    line-height: 1.6;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)), url('path/to/your/image.jpg'); /* Adjust the image path */
+    background-size: cover;
+    z-index: -1; /* Position it behind all content */
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7); /* Slightly transparent dark background */
+    backdrop-filter: blur(10px); /* Glassy effect */
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+p {
+    margin: 20px 0;
+    font-size: 1.2rem;
+}
+
+.cta-button {
+    background-color: #5a67d8;
+    color: white;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #434190;
+}
+
+section {
+    padding: 50px 0;
+    background: rgba(0, 0, 0, 0.7); /* Same glassy effect */
+    backdrop-filter: blur(10px);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 0 10%;
+}
+
+.feature {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    color: #ffffff;
+    text-align: center;
+    backdrop-filter: blur(10px); /* Glass effect */
+}
+
+footer {
+    background: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    padding: 20px 0;
+}
+
+@media screen and (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    .cta-button {
+        padding: 10px 20px;
+    }
+}
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<header>
+    <div class="container">
+        <h1>Welcome to Simple MVC Framework</h1>
+        <p>Build scalable web applications quickly and easily.</p>
+        <a href="#features" class="cta-button">Learn More</a>
+    </div>
+</header>
+
+<section id="features">
+    <div class="container">
+        <h2>Features</h2>
+        <div class="feature-grid">
+            <div class="feature">
+                <h3>Easy Routing</h3>
+                <p>Seamless routing that allows for clean URL structures.</p>
+            </div>
+            <div class="feature">
+                <h3>Lightweight</h3>
+                <p>Built to be fast and efficient, with minimal footprint.</p>
+            </div>
+            <div class="feature">
+                <h3>Scalable</h3>
+                <p>Easily handle growing applications with modular components.</p>
+            </div>
+            <div class="feature">
+                <h3>Secure</h3>
+                <p>Focus on security with built-in authentication features.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2023 Simple MVC Framework. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

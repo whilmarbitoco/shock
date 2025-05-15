@@ -7,6 +7,6 @@ public class Route extends RouteRegistry {
 
     @Override
     public void register() {
-        router.get("/user", UserController::get);
+        router.get("/", UserController::get);
     }
 }

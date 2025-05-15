@@ -1,4 +1,4 @@
-package org.whilmarbitoco.core;
+package org.whilmarbitoco.core.utils;
 
 
 import java.io.FileInputStream;
