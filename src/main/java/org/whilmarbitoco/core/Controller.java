@@ -1,6 +1,7 @@
 package org.whilmarbitoco.core;
 
 import org.whilmarbitoco.core.utils.Config;
+import org.whilmarbitoco.core.view.View;
 
 public class Controller {
 

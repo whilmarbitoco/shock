@@ -1,6 +1,5 @@
 package org.whilmarbitoco.core.router;
 
-import org.whilmarbitoco.core.View;
 import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.http.HttpRunnable;
 import org.whilmarbitoco.core.http.Middleware;

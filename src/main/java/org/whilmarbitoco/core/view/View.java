@@ -1,10 +1,12 @@
-package org.whilmarbitoco.core;
+package org.whilmarbitoco.core.view;
 
 import org.whilmarbitoco.core.utils.Config;
 import org.whilmarbitoco.core.utils.File;
+import org.whilmarbitoco.core.view.node.Node;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,5 +67,22 @@ public class View {
         PrintWriter pw = new PrintWriter(sw);
         throwable.printStackTrace(pw);
         return sw.toString();
+    }
+
+    public String renderAdvance(String view, Map<String, Object> context) {
+        Lexer lexer = new Lexer(view);
+        Parser parser = new Parser(lexer);
+        List<Node> nodes = parser.parse();
+
+       if (context == null) {
+           return view;
+       }
+
+        StringBuilder output = new StringBuilder();
+        for (Node node : nodes) {
+            output.append(node.render(context));
+        }
+
+        return output.toString();
     }
 }

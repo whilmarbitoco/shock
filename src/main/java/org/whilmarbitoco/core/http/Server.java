@@ -1,5 +1,5 @@
 package org.whilmarbitoco.core.http;
-import org.whilmarbitoco.core.View;
+import org.whilmarbitoco.core.view.View;
 import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.router.Router;
 
