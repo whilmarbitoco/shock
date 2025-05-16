@@ -5,12 +5,12 @@ import org.whilmarbitoco.core.view.View;
 
 public class Controller {
 
-    protected static View view() {
+    protected View view() {
         String path = Config.viewPath() + "template/" + Config.defaultViewTemplate();
         return new View(path);
     }
 
-    protected static View view(String template) {
+    protected View view(String template) {
         String path = Config.viewPath() + "template/" + template;
         return new View(path);
     }

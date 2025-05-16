@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class IndexController extends Controller {
 
-    public static String get(Request request, Response response) {
+    public String get(Request request, Response response) {
         return view(null).render("index.html");
     }
 }

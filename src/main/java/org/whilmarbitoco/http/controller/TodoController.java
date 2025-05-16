@@ -12,7 +12,7 @@ import java.util.Map;
 public class TodoController extends Controller {
     static List<String> todos = new ArrayList<>();
 
-    public static String viewTodo(Request req, Response res) {
+    public String viewTodo(Request req, Response res) {
 
         Map<String, Object> context = new HashMap<>();
 
@@ -20,7 +20,7 @@ public class TodoController extends Controller {
         return view().render("todo.html", context);
     }
 
-    public static String addTodo(Request req, Response res) {
+    public String addTodo(Request req, Response res) {
         String todo = (String) req.getBody("todo");
 
         todos.add(todo);

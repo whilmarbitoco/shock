@@ -21,13 +21,6 @@ public class Router {
     private final MiddlewareRegistry middlewareRegistry = new Middlewares();
     private final Map<String, Map<String, RouteHandler>> routes = new HashMap<>();
 
-//    ["GET" => ["/path" => [TodoCont.class, "view"]]]
-
-    public class Test {
-        Class<?> controller;
-        String method;
-    }
-
     public Router() {
         routes.put("GET", new HashMap<>());
         routes.put("POST", new HashMap<>());
@@ -41,7 +34,17 @@ public class Router {
         registerRoute("GET", path, func, method);
     }
 
+    public void get(String path, Class<?> func, String method, String... middleware) {
+        registerRoute("GET", path, func, method, middleware);
+    }
 
+    public void post(String path, Class<?> func, String method) {
+        registerRoute("POST", path, func, method);
+    }
+
+    public void post(String path, Class<?> func, String method, String... middleware) {
+        registerRoute("POST", path, func, method, middleware);
+    }
 
     private void registerRoute(String method, String path, Class<?> func, String methodName, String... middlewares) {
         routes.get(method).putIfAbsent(path, new RouteHandler(func, methodName, middlewares));
