@@ -63,6 +63,5 @@ public class Router {
 
         String view = route.get(path).getFunc().handle(request, response);
         response.send(view);
-
     }
 }

@@ -10,6 +10,7 @@ public class LogsMiddleware implements Middleware {
 
     @Override
     public void handle(Request request, Response response) {
+        System.out.print("[Middleware] ");
         System.out.print(LocalDate.now() + " :: ");
         System.out.println(request.getMethod() + " " + request.getPath());
     }

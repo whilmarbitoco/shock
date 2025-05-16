@@ -13,10 +13,12 @@ import java.util.Map;
 public class UserController extends Controller {
 
     public static String get(Request request, Response response) {
-        String name = (String) request.getParam("name");
 
-        String view = "<h1>Welcome, {{name}}</h1>";
+        return view().render("form.html");
+    }
 
-        return view().render(view, Map.of("name", name == null ? "Shock" : name, "year", LocalDate.now().getYear()));
+    public static String create(Request request, Response response) {
+
+        return request.toString();
     }
 }
