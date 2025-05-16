@@ -18,7 +18,6 @@ public class Parser {
 
         while (lexer.getCurrentToken().type != TokenType.EOF) {
             Token token = lexer.getCurrentToken();
-
             switch (token.type) {
                 case TEXT:
                     nodes.add(new TextNode(token.value));
