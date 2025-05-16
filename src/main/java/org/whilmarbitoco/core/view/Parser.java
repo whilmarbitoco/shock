@@ -83,7 +83,6 @@ public class Parser {
             lexer.advance();
         }
 
-        // Consume ENDFOR
         lexer.advance();
         return bodyNodes;
     }
