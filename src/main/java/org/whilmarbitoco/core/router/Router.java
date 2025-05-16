@@ -1,5 +1,6 @@
 package org.whilmarbitoco.core.router;
 
+import org.whilmarbitoco.core.ControllerInvoker;
 import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.http.HttpRunnable;
 import org.whilmarbitoco.core.http.Middleware;
@@ -7,8 +8,11 @@ import org.whilmarbitoco.core.http.Request;
 import org.whilmarbitoco.core.http.Response;
 import org.whilmarbitoco.core.registry.MiddlewareRegistry;
 import org.whilmarbitoco.exception.InternalServerException;
+import org.whilmarbitoco.http.controller.TodoController;
 import org.whilmarbitoco.registry.Middlewares;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +20,13 @@ public class Router {
 
     private final MiddlewareRegistry middlewareRegistry = new Middlewares();
     private final Map<String, Map<String, RouteHandler>> routes = new HashMap<>();
+
+//    ["GET" => ["/path" => [TodoCont.class, "view"]]]
+
+    public class Test {
+        Class<?> controller;
+        String method;
+    }
 
     public Router() {
         routes.put("GET", new HashMap<>());
@@ -26,25 +37,14 @@ public class Router {
 
     }
 
-    public void get(String path, HttpRunnable func) {
-        registerRoute("GET", path, func);
-
+    public void get(String path, Class<?> func, String method) {
+        registerRoute("GET", path, func, method);
     }
 
-    public void get(String path, HttpRunnable func, String... middlewareNames) {
-        registerRoute("GET", path, func, middlewareNames);
-    }
 
-    public void post(String path, HttpRunnable func) {
-        registerRoute("POST", path, func);
-    }
 
-    public void post(String path, HttpRunnable func, String... middlewares) {
-        registerRoute("POST", path, func, middlewares);
-    }
-
-    private void registerRoute(String method, String path, HttpRunnable func, String... middlewares) {
-        routes.get(method).putIfAbsent(path, new RouteHandler(func, middlewares));
+    private void registerRoute(String method, String path, Class<?> func, String methodName, String... middlewares) {
+        routes.get(method).putIfAbsent(path, new RouteHandler(func, methodName, middlewares));
     }
 
     public void resolve(Request request, Response response) throws HttpException {
@@ -71,7 +71,7 @@ public class Router {
         }
 
         if (!response.isHandled()) {
-            String view = handler.getFunc().handle(request, response);
+            String view = (String) ControllerInvoker.invoke(handler.getController(), handler.getMethodName(), request, response);
             response.send(view);
         }
     }
