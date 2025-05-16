@@ -7,11 +7,16 @@ import org.whilmarbitoco.core.http.Request;
 import org.whilmarbitoco.core.http.Response;
 import org.whilmarbitoco.core.utils.File;
 
+import java.time.LocalDate;
+import java.util.Map;
+
 public class UserController extends Controller {
 
     public static String get(Request request, Response response) {
         String search = (String) request.getParam("search");
 
-        return view().render("Test");
+        String view = "<h1>Hello, {{name}}</h1>";
+
+        return view().render(view, Map.of("name", "Alouh", "year", LocalDate.now().getYear()));
     }
 }

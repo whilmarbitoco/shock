@@ -3,10 +3,16 @@ package org.whilmarbitoco.core;
 import org.whilmarbitoco.core.utils.Config;
 import org.whilmarbitoco.core.utils.File;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class View {
 
     protected String viewPath = Config.viewPath();
     protected String template;
+
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{\\{(.*?)}}");
 
     public View() {}
 
@@ -37,5 +43,18 @@ public class View {
         return view;
     }
 
+    public String render(String view, Map<String, Object> context) {
+        String template = render(view);
+        Matcher matcher = VARIABLE_PATTERN.matcher(template);
+        StringBuilder buffer = new StringBuilder();
 
+        while (matcher.find()) {
+            String variableName = matcher.group(1).trim();
+            Object variableValue = context.get(variableName);
+            String replacement = (variableValue != null) ? variableValue.toString() : "";
+            matcher.appendReplacement(buffer, replacement);
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
 }
