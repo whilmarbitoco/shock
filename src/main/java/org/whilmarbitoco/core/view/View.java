@@ -49,34 +49,9 @@ public class View {
 
     public String render(String view, Map<String, Object> context) {
         String template = render(view);
-        Matcher matcher = VARIABLE_PATTERN.matcher(template);
-        StringBuilder buffer = new StringBuilder();
-
-        while (matcher.find()) {
-            String variableName = matcher.group(1).trim();
-            Object variableValue = context.get(variableName);
-            String replacement = (variableValue != null) ? Matcher.quoteReplacement(variableValue.toString()) : "";
-            matcher.appendReplacement(buffer, replacement);
-        }
-        matcher.appendTail(buffer);
-        return buffer.toString();
-    }
-
-    public static String getStackTraceString(Throwable throwable) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        throwable.printStackTrace(pw);
-        return sw.toString();
-    }
-
-    public String renderAdvance(String view, Map<String, Object> context) {
-        Lexer lexer = new Lexer(view);
+        Lexer lexer = new Lexer(template);
         Parser parser = new Parser(lexer);
         List<Node> nodes = parser.parse();
-
-       if (context == null) {
-           return view;
-       }
 
         StringBuilder output = new StringBuilder();
         for (Node node : nodes) {
@@ -84,5 +59,12 @@ public class View {
         }
 
         return output.toString();
+    }
+
+    public static String getStackTraceString(Throwable throwable) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        return sw.toString();
     }
 }

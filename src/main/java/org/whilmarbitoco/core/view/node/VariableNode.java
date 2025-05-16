@@ -13,6 +13,6 @@ public class VariableNode extends Node {
     @Override
     public String render(Map<String, Object> context) {
         Object value = context.get(variableName);
-        return value != null ? value.toString() : "";
+        return value != null ? value.toString() : "{{ " + variableName + " }}";
     }
 }
