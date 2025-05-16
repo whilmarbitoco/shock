@@ -18,6 +18,8 @@ public class Parser {
 
         while (lexer.getCurrentToken().type != TokenType.EOF) {
             Token token = lexer.getCurrentToken();
+
+
             switch (token.type) {
                 case TEXT:
                     nodes.add(new TextNode(token.value));
@@ -34,13 +36,9 @@ public class Parser {
                     String[] parts = token.value.split(",");
                     String varName = parts[0].trim();
                     String listName = parts[1].trim();
-                    List<Node> loopBody = parse();
+                    List<Node> loopBody = parseLoopBody();
                     nodes.add(new ForNode(varName, listName, loopBody));
                     break;
-
-                case ENDFOR, ENDIF:
-                    lexer.advance();
-                    return nodes;
 
                 case IF:
                     lexer.advance();
@@ -56,4 +54,38 @@ public class Parser {
 
         return nodes;
     }
+
+    private List<Node> parseLoopBody() {
+        List<Node> bodyNodes = new ArrayList<>();
+
+        while (lexer.getCurrentToken().type != TokenType.ENDFOR) {
+            Token token = lexer.getCurrentToken();
+
+            switch (token.type) {
+                case TEXT:
+                    bodyNodes.add(new TextNode(token.value));
+                    break;
+                case VARIABLE:
+                    bodyNodes.add(new VariableNode(token.value));
+                    break;
+                case FOR:
+                    String[] parts = token.value.split(",");
+                    String varName = parts[0].trim();
+                    String listName = parts[1].trim();
+                    lexer.advance();
+                    List<Node> nestedLoopBody = parseLoopBody();
+                    bodyNodes.add(new ForNode(varName, listName, nestedLoopBody));
+                    break;
+                case IF:
+                    break;
+            }
+
+            lexer.advance();
+        }
+
+        // Consume ENDFOR
+        lexer.advance();
+        return bodyNodes;
+    }
+
 }

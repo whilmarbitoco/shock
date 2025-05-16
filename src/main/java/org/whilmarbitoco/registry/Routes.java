@@ -9,6 +9,6 @@ public class Routes extends RouteRegistry {
     public void register() {
         router.get("/", UserController::get);
 
-        router.post("/user", UserController::create);
+        router.get("/user", UserController::create);
     }
 }
