@@ -13,11 +13,9 @@ public class Response {
 
     private boolean handled = false;
     private MimeType mimeType = MimeType.HTML;
-    private String location;
     private int statusCode = 200;
 
-    public Response(String location) {
-        this.location = location;
+    public Response() {
         setDefaultHeaders();
     }
 
@@ -51,7 +49,8 @@ public class Response {
     }
 
     public void redirect(String path) {
-        location = path;
+        handled = true;
+        statusCode = 301;
         headers.put("Location", path);
     }
 

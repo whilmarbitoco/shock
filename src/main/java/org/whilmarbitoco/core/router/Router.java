@@ -40,6 +40,10 @@ public class Router {
         registerRoute("POST", path, func);
     }
 
+    public void post(String path, HttpRunnable func, String... middlewares) {
+        registerRoute("POST", path, func, middlewares);
+    }
+
     private void registerRoute(String method, String path, HttpRunnable func, String... middlewares) {
         routes.get(method).putIfAbsent(path, new RouteHandler(func, middlewares));
     }
@@ -61,7 +65,26 @@ public class Router {
             m.handle(request, response);
         }
 
-        String view = route.get(path).getFunc().handle(request, response);
-        response.send(view);
+        RouteHandler handler =  route.get(path);
+
+        for (String m : handler.getMiddlewares()) {
+            middlewareRegistry.getMiddleware(m).handle(request, response);
+        }
+
+        if (!response.isHandled()) {
+            String view = handler.getFunc().handle(request, response);
+            response.send(view);
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+

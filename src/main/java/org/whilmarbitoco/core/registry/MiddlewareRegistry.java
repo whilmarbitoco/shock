@@ -1,6 +1,9 @@
 package org.whilmarbitoco.core.registry;
 
+import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.http.Middleware;
+import org.whilmarbitoco.exception.InternalServerException;
+import org.whilmarbitoco.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +28,9 @@ public abstract class MiddlewareRegistry {
         middlewares.put(name, middleware);
     }
 
-    public Middleware getMiddleware(String name) {
+    public Middleware getMiddleware(String name) throws HttpException {
         if (!middlewares.containsKey(name)) {
-            throw new RuntimeException(name + " Middleware not found");
+            throw new InternalServerException(name + " Middleware not registered");
         }
         return middlewares.get(name);
     }
