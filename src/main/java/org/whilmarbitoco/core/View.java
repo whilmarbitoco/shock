@@ -31,7 +31,7 @@ public class View {
 
         if (view.endsWith(".html") && template != null) {
             String temp = File.loadContent(template);
-            String content = Config.viewPath() + view;
+            String content = File.loadContent(Config.viewPath() + view);
 
             return temp.replace("{{content}}", content);
         }

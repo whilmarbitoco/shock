@@ -56,13 +56,31 @@ public class Server {
             Response response = new Response(uri);
 
             try {
-                request.setParams(params);
 
+//                Read headers
+                request.setParams(params);
                 String line;
                 while ((line = in.readLine()) != null && !line.isEmpty()) {
                     String[] header = line.split(":");
                     request.addHeader(header[0], header[1]);
                 }
+
+//                Ready Body
+                String content = request.getHeader("Content-Length");
+                int contentLength = Integer.parseInt((content == null ? "0" : content).trim());
+                StringBuilder body = new StringBuilder();
+                if (contentLength > 0) {
+                    char[] buffer = new char[1024];
+                    int bytesRead;
+                    int totalBytesRead = 0;
+
+                    while (totalBytesRead < contentLength && (bytesRead = in.read(buffer, 0, Math.min(buffer.length, contentLength - totalBytesRead))) != -1) {
+                        body.append(buffer, 0, bytesRead);
+                        totalBytesRead += bytesRead;
+                    }
+                    request.setBody(body.toString().split("&"));
+                }
+
 
                 router.resolve(request, response);
             } catch (HttpException e) {
@@ -81,6 +99,5 @@ public class Server {
             throw new RuntimeException(e.getMessage());
         }
     }
-
 
 }

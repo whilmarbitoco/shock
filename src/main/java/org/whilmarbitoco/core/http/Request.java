@@ -11,6 +11,7 @@ public class Request {
 
     private final Map<String, String> headers = new HashMap<>();
     private final Map<String, Object> params = new HashMap<>();
+    private final Map<String, Object> body = new HashMap<>();
 
     private final String method;
     private final String path;
@@ -34,8 +35,25 @@ public class Request {
         }
     }
 
+    public void setBody(String[] params) throws HttpException {
+        if (params.length < 1) return;
+
+       try {
+           for (String param : params) {
+               String[] p = param.split("=");
+               body.putIfAbsent(p[0], p[1]);
+           }
+       } catch (Exception e) {
+           throw new NotFoundException("Body missing value");
+       }
+    }
+
     public Object getParam(String key) {
         return params.get(key);
+    }
+
+    public Object getBody(String key) {
+        return body.get(key);
     }
 
     public void addHeader(String header, String content) {

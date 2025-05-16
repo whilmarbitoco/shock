@@ -8,5 +8,7 @@ public class Routes extends RouteRegistry {
     @Override
     public void register() {
         router.get("/", UserController::get);
+
+        router.post("/user", UserController::create);
     }
 }
