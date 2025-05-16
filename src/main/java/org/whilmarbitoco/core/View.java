@@ -5,29 +5,37 @@ import org.whilmarbitoco.core.utils.File;
 
 public class View {
 
-    protected String viewPath = Config.resources() + "view/";
-    protected String template = viewPath + "template/" + Config.viewTemplate();
-    protected String content = template;
+    protected String viewPath = Config.viewPath();
+    protected String template;
 
     public View() {}
 
-    public View(String view) {
-        content = view;
+    public View(String absolute) {
+        this.template = absolute;
     }
 
-    public void template(String file) {
-        template = viewPath + file;
+    public void template(String template) {
+        this.template = viewPath + template;
     }
 
-    @Override
-    public String toString() {
-        return assertContent();
-    }
+    public String render(String view) {
+        if (view == null) return "";
 
-    private String assertContent() {
-        if (content.endsWith(".html")) {
-            return File.loadContent(viewPath + content);
+        if (view.endsWith(".html") && template != null) {
+            String temp = File.loadContent(template);
+            String content = Config.viewPath() + view;
+
+            return temp.replace("{{content}}", content);
         }
-        return File.loadContent(template).replace("{{content}}", content);
+
+        if (!view.endsWith(".html") && template != null) {
+            String temp = File.loadContent(template);
+
+            return temp.replace("{{content}}", view);
+        }
+
+        return view;
     }
+
+
 }

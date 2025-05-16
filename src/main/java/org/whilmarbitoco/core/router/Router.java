@@ -61,9 +61,8 @@ public class Router {
             m.handle(request, response);
         }
 
-        View view = route.get(path).getFunc().handle(request, response);
-        response.send(view.toString());
+        String view = route.get(path).getFunc().handle(request, response);
+        response.send(view);
 
     }
-
 }

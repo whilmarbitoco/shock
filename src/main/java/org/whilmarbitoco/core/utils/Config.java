@@ -36,7 +36,7 @@ public class Config {
         return props.getProperty("db.password");
     }
 
-    public static String viewTemplate() {
+    public static String defaultViewTemplate() {
         return props.getProperty("view.template");
     }
 
@@ -50,5 +50,9 @@ public class Config {
 
     private static String getPath() {
         return (System.getProperty("user.dir") + "/src/main/resources/config.properties");
+    }
+
+    public static String viewPath() {
+        return resources() + "view/";
     }
 }
