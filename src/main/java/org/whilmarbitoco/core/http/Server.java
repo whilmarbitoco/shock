@@ -5,6 +5,7 @@ import org.whilmarbitoco.core.router.Router;
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
 
 public class Server {
 
@@ -65,9 +66,12 @@ public class Server {
 
                 router.resolve(request, response);
             } catch (HttpException e) {
-                View view = new View(e.getMessage());
+                View view = new View();
                 view.template("template/error.html");
-                response.send(view.toString());
+
+                String error = View.getStackTraceString(e);
+                String render = view.render(e.getMessage(), Map.of("stack", error));
+                response.send(render);
             } finally {
                 out.write(response.toString().getBytes());
                 out.flush();

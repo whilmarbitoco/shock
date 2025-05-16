@@ -13,10 +13,10 @@ import java.util.Map;
 public class UserController extends Controller {
 
     public static String get(Request request, Response response) {
-        String search = (String) request.getParam("search");
+        String name = (String) request.getParam("name");
 
-        String view = "<h1>Hello, {{name}}</h1>";
+        String view = "<h1>Welcome, {{name}}</h1>";
 
-        return view().render(view, Map.of("name", "Alouh", "year", LocalDate.now().getYear()));
+        return view().render(view, Map.of("name", name == null ? "Shock" : name, "year", LocalDate.now().getYear()));
     }
 }
