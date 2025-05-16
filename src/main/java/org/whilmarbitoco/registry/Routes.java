@@ -9,7 +9,10 @@ public class Routes extends RouteRegistry {
     @Override
     public void register() {
 
-        router.get("/todo", TodoController.class, "viewTodo");
+        router.get("/", IndexController.class, "get");
+
+        router.get("/todo", TodoController.class, "viewTodo", "auth");
+        router.post("/todo", TodoController.class, "addTodo", "auth");
 
     }
 }

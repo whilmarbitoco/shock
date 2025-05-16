@@ -31,7 +31,6 @@ public class View {
     public String render(String view) {
         if (view == null) return "";
 
-        System.out.println(this.template + " " + view);
         if (view.endsWith(".html") && !template.endsWith(".html")) {
             return File.loadContent(viewPath + view);
         }
