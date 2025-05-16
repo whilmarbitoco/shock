@@ -5,6 +5,7 @@ import org.whilmarbitoco.core.router.Router;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class Server {
@@ -53,7 +54,7 @@ public class Server {
             }
 
             Request request = new Request(parts[0], uri);
-            Response response = new Response(uri);
+            Response response = new Response();
 
             try {
 
@@ -61,7 +62,7 @@ public class Server {
                 request.setParams(params);
                 String line;
                 while ((line = in.readLine()) != null && !line.isEmpty()) {
-                    String[] header = line.split(":");
+                    String[] header = decode(line).split(":");
                     request.addHeader(header[0], header[1]);
                 }
 
@@ -78,7 +79,7 @@ public class Server {
                         body.append(buffer, 0, bytesRead);
                         totalBytesRead += bytesRead;
                     }
-                    request.setBody(body.toString().split("&"));
+                    request.setBody(decode(body.toString()).split("&"));
                 }
 
 
@@ -98,6 +99,10 @@ public class Server {
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    protected String decode(String str) {
+        return URLDecoder.decode(str, StandardCharsets.UTF_8);
     }
 
 }

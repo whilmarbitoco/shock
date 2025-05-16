@@ -35,7 +35,7 @@ public class Request {
         }
     }
 
-    public void setBody(String[] params) throws HttpException {
+    public void setBody(String[] params) {
         if (params.length < 1) return;
 
        try {
@@ -44,7 +44,6 @@ public class Request {
                body.putIfAbsent(p[0], p[1]);
            }
        } catch (Exception e) {
-           throw new NotFoundException("Body missing value");
        }
     }
 
