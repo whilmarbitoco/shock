@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class View {
 
     protected String viewPath = Config.viewPath();
-    protected String template;
+    protected String template = viewPath;
 
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{\\{(.*?)}}");
 
@@ -31,16 +31,20 @@ public class View {
     public String render(String view) {
         if (view == null) return "";
 
-        if (view.endsWith(".html") && template != null) {
+        System.out.println(this.template + " " + view);
+        if (view.endsWith(".html") && !template.endsWith(".html")) {
+            return File.loadContent(viewPath + view);
+        }
+
+        if (view.endsWith(".html") && template.endsWith(".html")) {
             String temp = File.loadContent(template);
             String content = File.loadContent(Config.viewPath() + view);
 
             return temp.replace("{{content}}", content);
         }
 
-        if (!view.endsWith(".html") && template != null) {
+        if (!view.endsWith(".html") && template.endsWith(".html")) {
             String temp = File.loadContent(template);
-
             return temp.replace("{{content}}", view);
         }
 
