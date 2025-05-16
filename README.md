@@ -1,70 +1,120 @@
-# **`wb2c0Net🚀` — Minimalist Java MVC Web Framework** 🌐
+# `Shock 🚀` — Full-Stack Java MVC Web Framework
 
-`wb2c0Net` is a lightweight, modular, and developer-centric MVC web framework for Java, designed to provide complete control over request handling, routing, and response processing. Built for simplicity and flexibility, `wb2c0Net` empowers you to create robust web applications with minimal overhead.
-
----
-
-### **Features:**
-
-* 🛠️ **Custom Routing System:** Define GET, POST, PUT, DELETE routes effortlessly.
-* 🔄 **Request & Response Handling:** Access request data and craft dynamic responses.
-* ⚡ **Lightweight & Fast:** Focus on essential components without unnecessary bloat.
-* 📦 **Extendable Middleware Support:** Create reusable middleware for authentication, logging, and more.
-* 📂 **MIME Type Management:** Built-in mappings for common content types.
-* 🧩 **Scalable Structure:** Simple and organized MVC architecture.
+`Shock` is a lightweight, modular, and developer-centric MVC web framework for Java, designed to provide complete control over request handling, routing, and response processing. Built for simplicity and flexibility, `Shock` empowers you to create robust web applications with minimal overhead.
 
 ---
 
-### **Getting Started:**
+### Features:
 
-1. Clone the repository:
+* 🛠️ **Flexible Routing System:** Define `GET`, `POST`, `PUT`, and `DELETE` routes with ease.  The routing system is designed to be intuitive and allows for complex URL patterns.
+* 🔄 **Request & Response Handling:** Provides convenient access to request data (headers, parameters, body) and facilitates the creation of dynamic and customized responses.
+* ⚡ **Lightweight & Fast:** Focuses on essential components, minimizing overhead and maximizing performance.  Ideal for applications where speed and efficiency are critical.
+* 📦 **Extendable Middleware Support:** Implement reusable middleware components for common tasks such as authentication, logging, request validation, and more.
+* 📂 **MIME Type Management:** Includes built-in mappings for common content types and allows for easy addition of custom types.
+* 🧩 **Modular Architecture:** Simple and organized MVC architecture promotes maintainability and scalability.
+* ✅ **Developer-Friendly:** Designed to be easy to learn and use, allowing developers to quickly get up to speed and focus on building application logic.
 
-   ```bash
-   git clone https://github.com/your-username/wb2c0Net.git
-   cd wb2c0Net
+---
+
+### Getting Started:
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/whilmarbitoco/shock.git
+    cd shock
+    ```
+
+2.  **Build the project:**
+
+    ```bash
+    javac -d out src/**/*.java
+    ```
+
+3.  **Run the sample server:**
+
+    ```bash
+    java -cp out org.whilmarbitoco.app.Main
+    ```
+
+---
+
+### Core Concepts:
+
+Shock is built around a few core concepts:
+
+* **Routes:** Define how the application responds to different HTTP requests.  Routes are typically defined in a dedicated class.
+* **Controllers:** Handle the logic for processing requests and generating responses.  Controllers interact with models and views.
+* **Middleware:** Intercept requests before they reach the controller, allowing you to modify the request, handle authentication, or perform other common tasks.
+* **Views:** Generate the HTML or other output that is sent to the client. Shock gives you the flexibility to use your preferred templating engine.
+
+---
+
+### Example Usage:
+
+1.  **Register a route in `registry/Routes.java`:**
+
+    ```java
+      package org.whilmarbitoco.registry;
+      
+      public class Routes extends RouteRegistry {
+      
+          @Override
+          public void register() {
+              router.get("/", UserController::get);
+          }
+      }
+    ```
+
+2.  **Create a controller in `http/controller`:**
+
+    ```java
+      package org.whilmarbitoco.http.controller;
+
+      public class UserController extends Controller {
+      
+          public static String get(Request request, Response response) {
+              String name = (String) request.getParam("name");
+      
+              String view = "<h1>Welcome, {{name}}</h1>";
+      
+              return view().render(view, Map.of("name", name == null ? "Shock" : name, "year", LocalDate.now().getYear()));
+          }
+      }
+
+    ```
+
+3.  **Rendering a dynamic view:**
+
+   * Create an HTML template (e.g., `index.html`) in your `views` directory.
+
+   ```html  
+        <!DOCTYPE html>
+         <html>
+            <head>
+               <title>Welcome!</title>
+            </head>
+            <body>
+               <h1>Hello, {{name}}!</h1>
+               <p>Welcome to Shock Framework.</p>
+            </body>
+         </html>
    ```
 
-2. Build the project:
+   * Pass data to the view from your controller.
 
-   ```bash
-   javac -d out src/**/*.java
-   ```
-
-3. Run the sample server:
-
-   ```bash
-   java -cp out org.whilmarbitoco.app.Main
+   ```java
+        return view().render(view, Map.of("name", name == null ? "Shock" : name, "year", LocalDate.now().getYear()));
    ```
 
 ---
 
-### **Example Usage:**
-
-```java
-Router router = new Router();
-
-router.get("/hello", (request, response) -> {
-    response.setBody("Hello, wb2c0Net!");
-    response.send();
-});
-
-router.post("/data", (request, response) -> {
-    String body = request.getBody();
-    response.setBody("Received: " + body);
-    response.send();
-});
-```
-
----
-
-### **License:**
+### License:
 
 This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
 
 ---
 
-### **Contributions:**
+### Contributions:
 
-Got a cool feature idea or found a bug? Open an issue or submit a pull request. Let’s build something awesome together! 💪💻
-
----
+Got a cool feature idea or found a bug?  We welcome contributions!  Please open an issue or submit a pull request.  Let's build something amazing together. 💪💻
