@@ -4,17 +4,27 @@ import org.whilmarbitoco.core.http.HttpRunnable;
 
 public class RouteHandler {
 
-    private HttpRunnable func;
+    private Class<?> controller;
+    private String methodName;
     private String[] middlewares;
 
-    public RouteHandler(HttpRunnable func, String[] middlewares) {
-        this.func = func;
+    public RouteHandler(Class<?> controller, String methodName) {
+        this.controller = controller;
+        this.methodName = methodName;
+    }
+
+    public RouteHandler(Class<?> controller, String methodName,String[] middlewares) {
+        this.controller = controller;
+        this.methodName = methodName;
         this.middlewares = middlewares;
     }
 
+    public Class<?> getController() {
+        return controller;
+    }
 
-    public HttpRunnable getFunc() {
-        return func;
+    public String getMethodName() {
+        return methodName;
     }
 
     public String[] getMiddlewares() {

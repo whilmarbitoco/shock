@@ -8,9 +8,8 @@ public class Routes extends RouteRegistry {
 
     @Override
     public void register() {
-        router.get("/", IndexController::get);
 
-        router.get("/todo", TodoController::viewTodo);
-        router.post("/todo", TodoController::addTodo);
+        router.get("/todo", TodoController.class, "viewTodo");
+
     }
 }
