@@ -7,4 +7,6 @@ public class UserRepository extends Repository<User> {
     public UserRepository() {
         super(User.class);
     }
+
+//    Dev Note: Add custom helper method here (e.g findByEmail)
 }

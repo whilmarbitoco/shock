@@ -85,10 +85,6 @@ public class Request {
         String cookies = req.getHeader("Cookie");
         if (cookies == null) return null;
 
-        if (cookies.contains(cookieName) && !cookieName.contains(";")) {
-            return cookies.split("=")[1];
-        }
-
         String[] cookieArray = cookies.split("; ");
         for (String cookie : cookieArray) {
             String[] parts = cookie.split("=", 2);
