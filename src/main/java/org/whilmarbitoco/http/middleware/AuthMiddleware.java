@@ -10,6 +10,6 @@ public class AuthMiddleware implements Middleware {
     public void handle(Request request, Response response) {
         String token = request.getHeader("Authorization");
 
-        if (token == null) response.redirect("/");
+        if (token == null) response.redirect("/login");
     }
 }
