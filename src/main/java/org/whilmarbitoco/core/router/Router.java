@@ -67,7 +67,7 @@ public class Router {
             m.handle(request, response);
         }
 
-        RouteHandler handler =  route.get(path);
+        RouteHandler handler = route.get(path);
 
         for (String m : handler.getMiddlewares()) {
             middlewareRegistry.getMiddleware(m).handle(request, response);

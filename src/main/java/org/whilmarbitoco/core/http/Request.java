@@ -1,6 +1,7 @@
 package org.whilmarbitoco.core.http;
 
 import org.whilmarbitoco.core.exception.HttpException;
+import org.whilmarbitoco.core.session.SessionManager;
 import org.whilmarbitoco.exception.InternalServerException;
 import org.whilmarbitoco.exception.NotFoundException;
 
@@ -13,6 +14,7 @@ public class Request {
     private final Map<String, Object> params = new HashMap<>();
     private final Map<String, Object> body = new HashMap<>();
 
+    private String sessionID;
     private final String method;
     private final String path;
 
@@ -47,6 +49,14 @@ public class Request {
        }
     }
 
+    public String getSession() {
+        return sessionID;
+    }
+
+    public void setSession(String sessionID) {
+        this.sessionID = sessionID;
+    }
+
     public Object getParam(String key) {
         return params.get(key);
     }
@@ -69,6 +79,24 @@ public class Request {
 
     public String getPath() {
         return path;
+    }
+
+    public static String getCookie(Request req, String cookieName) {
+        String cookies = req.getHeader("Cookie");
+        if (cookies == null) return null;
+
+        if (cookies.contains(cookieName) && !cookieName.contains(";")) {
+            return cookies.split("=")[1];
+        }
+
+        String[] cookieArray = cookies.split("; ");
+        for (String cookie : cookieArray) {
+            String[] parts = cookie.split("=", 2);
+            if (parts.length == 2 && parts[0].equals(cookieName)) {
+                return parts[1];
+            }
+        }
+        return null;
     }
 
     @Override

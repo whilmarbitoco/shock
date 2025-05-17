@@ -48,10 +48,22 @@ public class Response {
         headers.put("Content-Type", this.mimeType.getType());
     }
 
-    public void redirect(String path) {
+    public Response redirect(String path) {
         handled = true;
         statusCode = 301;
         headers.put("Location", path);
+        return this;
+    }
+
+    public Response redirect(String path, int status) {
+        handled = true;
+        statusCode = status;
+        headers.put("Location", path);
+        return this;
+    }
+
+    public void error(String error) {
+        headers.put("X-Error-Message", error);
     }
 
     public void setHeader(String key, String value) {

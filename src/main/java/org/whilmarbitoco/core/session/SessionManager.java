@@ -3,27 +3,32 @@ package org.whilmarbitoco.core.session;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Session {
-    private final Map<String, Object> data = new HashMap<>();
-    private final Map<String, Object> flashData = new HashMap<>();
+public class SessionManager {
+    private static Map<String, Map<String, String>> sessions = new HashMap<>();
+    private static Map<String, Map<String, String>> flash = new HashMap<>();
 
-    public void set(String key, Object value) {
-        data.put(key, value);
+
+    public static Map<String, String> session(String sessionID) {
+        return sessions.computeIfAbsent(sessionID, e -> new HashMap<>());
     }
 
-    public Object get(String key) {
-        return data.get(key);
+    public static Map<String, String> flash(String sessionID) {
+        return flash.computeIfAbsent(sessionID, e -> new HashMap<>());
     }
 
-    public void flash(String key, Object value) {
-        flashData.put(key, value);
+    public static boolean hasSession(String session) {
+        return sessions.containsKey(session);
     }
 
-    public Object getFlash(String key) {
-        return flashData.remove(key);
+    public static boolean hashFlash(String session) {
+        return !flash.get(session).isEmpty();
     }
 
-    public void clearFlashData() {
-        flashData.clear();
+    public static Map<String, Map<String, String>> getSessions() {
+        return sessions;
+    }
+
+    public static Map<String, Map<String, String>> getFlash() {
+        return flash;
     }
 }

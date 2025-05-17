@@ -1,4 +1,10 @@
 package org.whilmarbitoco.database.repository;
 
-public class UserRepository {
+import org.whilmarbitoco.core.database.Repository;
+import org.whilmarbitoco.database.model.User;
+
+public class UserRepository extends Repository<User> {
+    public UserRepository() {
+        super(User.class);
+    }
 }
