@@ -14,7 +14,7 @@ public class Request {
     private final Map<String, Object> params = new HashMap<>();
     private final Map<String, Object> body = new HashMap<>();
 
-    private String sessionID;
+    private String shockSession;
     private final String method;
     private final String path;
 
@@ -49,12 +49,12 @@ public class Request {
        }
     }
 
-    public String getSession() {
-        return sessionID;
+    public String getShockSession() {
+        return shockSession;
     }
 
-    public void setSession(String sessionID) {
-        this.sessionID = sessionID;
+    public void setShockSession(String shockSession) {
+        this.shockSession = shockSession;
     }
 
     public Object getParam(String key) {

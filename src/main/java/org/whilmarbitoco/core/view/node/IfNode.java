@@ -19,13 +19,21 @@ public class IfNode extends Node {
         Object condValue = context.get(condition);
 
         if (condValue instanceof Boolean && (Boolean) condValue) {
-            StringBuilder sb = new StringBuilder();
-            for (Node node : body) {
-                sb.append(node.render(context));
-            }
-            return sb.toString();
+          return processBody(context);
+        }
+
+        if (condValue != null) {
+            return processBody(context);
         }
 
         return "";
+    }
+
+    protected String processBody(Map<String, Object> context) {
+        StringBuilder sb = new StringBuilder();
+        for (Node node : body) {
+            sb.append(node.render(context));
+        }
+        return sb.toString();
     }
 }

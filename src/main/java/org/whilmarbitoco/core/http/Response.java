@@ -11,6 +11,7 @@ public class Response {
     private final Map<String, String> headers = new HashMap<>();
     private final StringBuilder body = new StringBuilder();
 
+    private String shockSession;
     private boolean handled = false;
     private MimeType mimeType = MimeType.HTML;
     private int statusCode = 200;
@@ -21,6 +22,14 @@ public class Response {
 
     public void setStatus(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getShockSession() {
+        return shockSession;
+    }
+
+    public void setShockSession(String sessionID) {
+        this.shockSession = sessionID;
     }
 
     private void setDefaultHeaders() {
@@ -50,14 +59,14 @@ public class Response {
 
     public Response redirect(String path) {
         handled = true;
-        statusCode = 301;
+        setStatus(301);
         headers.put("Location", path);
         return this;
     }
 
     public Response redirect(String path, int status) {
         handled = true;
-        statusCode = status;
+        setStatus(status);
         headers.put("Location", path);
         return this;
     }
