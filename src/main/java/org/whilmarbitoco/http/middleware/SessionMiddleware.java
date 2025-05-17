@@ -6,7 +6,6 @@ import org.whilmarbitoco.core.http.Response;
 import org.whilmarbitoco.core.session.SessionManager;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class SessionMiddleware implements Middleware {
@@ -15,6 +14,7 @@ public class SessionMiddleware implements Middleware {
     public void handle(Request request, Response response) {
         String sessionId = Request.getCookie(request, "SESSIONID");
 
+        String b = sessionId;
         if (sessionId == null|| !SessionManager.hasSession(sessionId)) {
             sessionId = UUID.randomUUID().toString();
             SessionManager.getSessions().put(sessionId, new HashMap<>());
@@ -22,7 +22,13 @@ public class SessionMiddleware implements Middleware {
             response.setHeader("Set-Cookie", "SESSIONID=" + sessionId + "; HttpOnly; Path=/");
         }
 
-        request.setSession(sessionId);
+
+        if (b != null && !b.equals(sessionId)) {
+            System.out.println("[Session Changed] " + sessionId);
+        }
+
+        response.setShockSession(sessionId);
+        request.setShockSession(sessionId);
     }
 
 }

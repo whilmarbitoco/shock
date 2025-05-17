@@ -43,6 +43,7 @@ public class Lexer {
                 return;
             } else if (matcher.group(5) != null) {
                 String condition = matcher.group(6);
+                System.out.println("Lexer: " + condition);
                 currentToken = new Token(TokenType.IF, condition);
                 return;
             } else if (matcher.group(7) != null) {
