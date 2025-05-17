@@ -17,6 +17,7 @@ public class Routes extends RouteRegistry {
 
         router.get("/todo", TodoController.class, "viewTodo", "auth");
         router.post("/todo", TodoController.class, "addTodo", "auth");
+        router.post("/todo/delete", TodoController.class, "deleteTodo", "auth");
 
     }
 }

@@ -6,13 +6,18 @@
     {% for todo in todos %}
     <li>
       <span>{{todo}}</span>
-      <button class="delete-btn" onclick="deleteTodo(this)">Delete</button>
+      <form action="/todo/delete" method="post">
+        <input type="hidden" name="todo" value="{{ todo }}">
+        <button class="delete-btn" onclick="submit">Delete</button>
+      </form>
     </li>
     {% endfor %}
   </ul>
   <form class="input-group" method="post" action="/todo">
     <input type="text" name="todo" placeholder="Add new todo...">
-    <button class="btn" onclick="submit">Add</button>
+    <form>
+      <button class="btn" onclick="submit">Add</button>
+    </form>
   </form>
 </div>
 <style>

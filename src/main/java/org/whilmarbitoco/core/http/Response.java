@@ -10,6 +10,7 @@ public class Response {
 
     private final Map<String, String> headers = new HashMap<>();
     private final StringBuilder body = new StringBuilder();
+    private StringBuilder cookie = new StringBuilder();
 
     private String shockSession;
     private boolean handled = false;
@@ -30,6 +31,18 @@ public class Response {
 
     public void setShockSession(String sessionID) {
         this.shockSession = sessionID;
+    }
+
+    public void setCookie(String name, String cookie) {
+        StringBuilder ck = new StringBuilder();
+        ck.append("Set-Cookie:")
+                .append(name)
+                .append("=")
+                .append(cookie)
+                .append("; HttpOnly; Path=/")
+                .append("\r\n");
+        this.cookie.append(ck.toString());
+        ck.setLength(0);
     }
 
     private void setDefaultHeaders() {
@@ -71,10 +84,6 @@ public class Response {
         return this;
     }
 
-    public void error(String error) {
-        headers.put("X-Error-Message", error);
-    }
-
     public void setHeader(String key, String value) {
         headers.put(key, value);
     }
@@ -84,6 +93,7 @@ public class Response {
         headers.put("Content-Length", String.valueOf(body.length()));
         StringBuilder responseBuilder = new StringBuilder();
         responseBuilder.append("HTTP/1.1 ").append(statusCode).append("\r\n");
+        responseBuilder.append(this.cookie.toString());
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             responseBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
         }

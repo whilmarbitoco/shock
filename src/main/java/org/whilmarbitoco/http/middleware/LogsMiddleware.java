@@ -13,5 +13,6 @@ public class LogsMiddleware implements Middleware {
         System.out.print("[Middleware] ");
         System.out.print(LocalDate.now() + " :: ");
         System.out.println(request.getMethod() + " " + request.getPath());
+//        System.out.println("[Cookies] ::" + request.getHeader("Cookie"));
     }
 }
