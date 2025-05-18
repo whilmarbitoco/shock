@@ -3,11 +3,7 @@ package org.whilmarbitoco.http.controller;
 import org.whilmarbitoco.core.Controller;
 import org.whilmarbitoco.core.http.Request;
 import org.whilmarbitoco.core.http.Response;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.whilmarbitoco.core.view.View;
 
 public class IndexController extends Controller {
 

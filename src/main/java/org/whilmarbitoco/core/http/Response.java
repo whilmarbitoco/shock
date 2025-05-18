@@ -10,7 +10,7 @@ public class Response {
 
     private final Map<String, String> headers = new HashMap<>();
     private final StringBuilder body = new StringBuilder();
-    private StringBuilder cookie = new StringBuilder();
+    private final StringBuilder cookie = new StringBuilder();
 
     private String shockSession;
     private boolean handled = false;
