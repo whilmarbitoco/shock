@@ -1,4 +1,5 @@
 package org.whilmarbitoco.core.http;
+import org.whilmarbitoco.core.utils.Error;
 import org.whilmarbitoco.core.view.View;
 import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.router.Router;
@@ -57,7 +58,6 @@ public class Server {
             Response response = new Response();
 
             try {
-
 //                Read headers
                 request.setParams(params);
                 String line;
@@ -79,16 +79,16 @@ public class Server {
                         body.append(buffer, 0, bytesRead);
                         totalBytesRead += bytesRead;
                     }
-                    request.setBody(decode(body.toString()).split("&"));
+                    String decodedBody = decode(body.toString());
+                    request.setBody(decodedBody.split("&"));
                 }
-
 
                 router.resolve(request, response);
             } catch (HttpException e) {
                 View view = new View();
                 view.template("template/error.html");
 
-                String error = View.getStackTraceString(e);
+                String error = Error.getStackTraceString(e);
                 String render = view.render(e.getMessage(), Map.of("stack", error));
                 response.send(render);
             } finally {

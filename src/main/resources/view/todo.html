@@ -2,9 +2,10 @@
   <h3>My Todos</h3>
 
   <ul id="todo-list">
-
+<!-- Sample Looping -->
     {% for todo in todos %}
     <li>
+<!--   Sample Variable   -->
       <span>{{todo}}</span>
       <form action="/todo/delete" method="post">
         <input type="hidden" name="todo" value="{{ todo }}">
@@ -15,9 +16,7 @@
   </ul>
   <form class="input-group" method="post" action="/todo">
     <input type="text" name="todo" placeholder="Add new todo...">
-    <form>
       <button class="btn" onclick="submit">Add</button>
-    </form>
   </form>
 </div>
 <style>

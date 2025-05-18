@@ -7,12 +7,14 @@ import org.whilmarbitoco.http.middleware.SessionMiddleware;
 
 public class Middlewares extends MiddlewareRegistry {
 
+//    Global Middlewares
     @Override
     public void global() {
         addGlobal(new LogsMiddleware()); // logs
         addGlobal(new SessionMiddleware()); // Global Session
     }
 
+//    Custom Middleware
     @Override
     public void register() {
         add("auth", new AuthMiddleware());

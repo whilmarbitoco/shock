@@ -34,6 +34,5 @@ public class AuthMiddleware implements Middleware {
                 user.ifPresent(e -> AuthMiddleware.auth = e);
             }
         });
-
     }
 }
