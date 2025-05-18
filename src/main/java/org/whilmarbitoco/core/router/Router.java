@@ -74,7 +74,9 @@ public class Router {
         }
 
         if (!response.isHandled()) {
-            String view = (String) ControllerInvoker.invoke(handler.getController(), handler.getMethodName(), request, response);
+            Class<?> controller = handler.getController();
+            String methodName = handler.getMethodName();
+            String view = (String) ControllerInvoker.invoke(controller, methodName, request, response);
             response.send(view);
         }
     }

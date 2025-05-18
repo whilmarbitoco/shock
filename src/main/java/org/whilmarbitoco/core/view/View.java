@@ -63,11 +63,4 @@ public class View {
 
         return output.toString();
     }
-
-    public static String getStackTraceString(Throwable throwable) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        throwable.printStackTrace(pw);
-        return sw.toString();
-    }
 }

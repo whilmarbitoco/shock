@@ -12,9 +12,12 @@ public class Routes extends RouteRegistry {
 
         router.get("/", IndexController.class, "get");
 
+//        Without Middleware
         router.get("/login", UserController.class, "loginGet");
         router.post("/login", UserController.class, "loginPost");
 
+
+//        With Middleware
         router.get("/todo", TodoController.class, "viewTodo", "auth");
         router.post("/todo", TodoController.class, "addTodo", "auth");
         router.post("/todo/delete", TodoController.class, "deleteTodo", "auth");

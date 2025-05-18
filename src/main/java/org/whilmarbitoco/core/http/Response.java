@@ -90,10 +90,12 @@ public class Response {
 
     @Override
     public String toString() {
-        headers.put("Content-Length", String.valueOf(body.length()));
         StringBuilder responseBuilder = new StringBuilder();
+
+        headers.put("Content-Length", String.valueOf(body.length()));
         responseBuilder.append("HTTP/1.1 ").append(statusCode).append("\r\n");
-        responseBuilder.append(this.cookie.toString());
+        responseBuilder.append(cookie.toString());
+
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             responseBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
         }

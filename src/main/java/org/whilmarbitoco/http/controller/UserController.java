@@ -18,6 +18,7 @@ public class UserController extends Controller {
     private final UserRepository USER = new UserRepository();
     private final TokenRepository TOKEN = new TokenRepository();
 
+//    Sample GET controller
     public String loginGet(Request req, Response res) {
         Map<String, Object> context = new HashMap<>();
 
@@ -29,6 +30,7 @@ public class UserController extends Controller {
         return view().render("login.html", context);
     }
 
+//    Sample POST controller
     public String loginPost(Request req, Response res) {
         String email = (String) req.getBody("email");
         String password = (String) req.getBody("password");
@@ -36,7 +38,7 @@ public class UserController extends Controller {
         Optional<User> user = USER.findWhere("email", "=", email)
                 .stream().findFirst();
 
-        if (user.isEmpty()) {;
+        if (user.isEmpty()) {
             flash(req.getShockSession()).put("error", "Email not registered");
             return res.redirect("/login", 301).toString();
         }
@@ -47,11 +49,9 @@ public class UserController extends Controller {
         }
 
         String session = UUID.randomUUID().toString();
-
         setAuth(user.get());
         TOKEN.create(new Token(session, user.get().getId()));
         res.setCookie("user-auth", session);
-
         res.redirect("/todo", 302);
         return "";
     }
