@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo — Shock Framework</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .demo-nav{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+        .demo-nav a{padding:.4rem .85rem;border-radius:999px;font-size:.8rem;font-weight:500;background:var(--bg-code);color:var(--text-muted);border:1px solid var(--border);text-decoration:none}
+        .demo-nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
+        .demo-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden}
+        .demo-section-header{background:var(--bg-code);padding:.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+        .demo-section-header h2{font-size:1rem;font-weight:600;color:var(--text-heading)}
+        .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+        .badge-get{background:#dcfce7;color:#166534}.badge-post{background:#dbeafe;color:#1e40af}
+        .badge-put{background:#fef3c7;color:#92400e}.badge-delete{background:#fee2e2;color:#991b1b}
+        .badge-patch{background:#f3e8ff;color:#6b21a8}
+        .demo-section-body{padding:1.25rem}
+        .demo-section-body p{font-size:.9rem;color:var(--text-muted);margin-bottom:.75rem}
+        .demo-table{width:100%;border-collapse:collapse;font-size:.85rem}
+        .demo-table th{text-align:left;padding:.6rem .85rem;background:var(--bg-code);border-bottom:2px solid var(--border);font-weight:600;color:var(--text-heading)}
+        .demo-table td{padding:.6rem .85rem;border-bottom:1px solid var(--border-light);color:var(--text)}
+        .demo-table tr:last-child td{border-bottom:none}
+        .code-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem}
+        .code-row pre{background:#1e1e2e;color:#cdd6f4;padding:1rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:.8rem;line-height:1.6;overflow-x:auto;margin:0}
+        .code-row-label{font-size:.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem}
+        .screenshot-block{background:var(--bg-code);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center}
+        .screenshot-block img{max-width:100%;border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+        .screenshot-block p{font-size:.78rem;color:var(--text-muted);margin-top:.5rem}
+        @media(max-width:768px){.code-row{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-brand">⚡ Shock</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/demo" style="color:var(--text)">Demo</a>
+            <a href="https://github.com/whilmarbitoco/shock" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero" style="padding:3rem 1.5rem 2rem;">
+    <div class="hero-inner">
+        <h1 class="hero-title" style="font-size:2rem;">Live Demo</h1>
+        <p class="hero-desc" style="font-size:.95rem;margin-bottom:1rem;">
+            Every feature below is running on Shock right now — no mocks, no static HTML.
+        </p>
+        <div class="demo-nav">
+            <a href="#routing">Routing</a>
+            <a href="#templates">Templates</a>
+            <a href="#forms">Forms</a>
+            <a href="#orm">ORM</a>
+            <a href="#middleware">Middleware</a>
+            <a href="#screenshots">Screenshots</a>
+        </div>
+    </div>
+</section>
+
+<div style="max-width:900px;margin:0 auto;padding:0 1.5rem 4rem;">
+
+<!-- Routing -->
+<div id="routing" class="demo-section">
+    <div class="demo-section-header">
+        <span class="badge badge-get">GET</span>
+        <span class="badge badge-post">POST</span>
+        <span class="badge badge-put">PUT</span>
+        <span class="badge badge-delete">DELETE</span>
+        <span class="badge badge-patch">PATCH</span>
+        <h2>HTTP Routing</h2>
+    </div>
+    <div class="demo-section-body">
+        <p>Clean route definitions. Register routes by HTTP method, path, controller class, and method name. Middleware can be applied per-route or globally.</p>
+        <table class="demo-table">
+            <thead><tr><th>Method</th><th>Path</th><th>Handler</th></tr></thead>
+            <tbody>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/</code></td><td><code>IndexController.get</code></td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/demo</code></td><td><code>DemoController.index</code></td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/todo</code></td><td><code>TodoController.viewTodo</code></td></tr>
+                <tr><td><span class="badge badge-post">POST</span></td><td><code>/todo</code></td><td><code>TodoController.addTodo</code></td></tr>
+                <tr><td><span class="badge badge-delete">DELETE</span></td><td><code>/todo/delete</code></td><td><code>TodoController.deleteTodo</code></td></tr>
+            </tbody>
+        </table>
+        <div class="code-row">
+            <div>
+                <div class="code-row-label">Route definition</div>
+                <pre><code>router.get("/",
+    IndexController.class, "get");
+
+router.post("/todo",
+    TodoController.class, "addTodo");
+
+router.patch("/users/{id}",
+    UserController.class, "update");</code></pre>
+            </div>
+            <div>
+                <div class="code-row-label">Controller</div>
+                <pre><code>public void addTodo(
+        Request req, Response res) {
+
+    String todo = req.input("todo");
+    // save to database...
+    res.redirect("/todo");
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Templates -->
+<div id="templates" class="demo-section">
+    <div class="demo-section-header"><h2>Template Engine</h2></div>
+    <div class="demo-section-body">
+        <p>Variables, conditionals with else/elseif, loops with empty-state handling — compiled to AST nodes and rendered server-side.</p>
+        <div class="code-row">
+            <div>
+                <div class="code-row-label">Template syntax</div>
+                <pre><code>&lt;h1&gt;{{title}}&lt;/h1&gt;
+
+{% if user != null %}
+    &lt;p&gt;Hello, {{user.name}}&lt;/p&gt;
+{% elseif guest %}
+    &lt;p&gt;Hello, Guest&lt;/p&gt;
+{% else %}
+    &lt;p&gt;Please log in&lt;/p&gt;
+{% endif %}
+
+{% for item in items %}
+    &lt;li&gt;{{item}}&lt;/li&gt;
+{% empty %}
+    &lt;li&gt;No items found&lt;/li&gt;
+{% endfor %}</code></pre>
+            </div>
+            <div>
+                <div class="code-row-label">Controller usage</div>
+                <pre><code>res.view("dashboard", Map.of(
+    "user", currentUser,
+    "items", itemList,
+    "guest", false
+));</code></pre>
+                <div class="code-row-label" style="margin-top:.75rem;">Lexer → Parser → AST → Render</div>
+                <pre><code>Lexer lexer = new Lexer(template);
+Parser parser = new Parser(lexer);
+List&lt;Node&gt; nodes = parser.parse();
+
+for (Node n : nodes)
+    output.append(n.render(ctx));</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forms -->
+<div id="forms" class="demo-section">
+    <div class="demo-section-header">
+        <span class="badge badge-post">POST</span>
+        <h2>Form Handling</h2>
+    </div>
+    <div class="demo-section-body">
+        <p>POST data parsed from request body. Access fields with <code>req.input("field")</code>. Session flash messages persist across redirects.</p>
+        <div class="code-row">
+            <div>
+                <div class="code-row-label">HTML form</div>
+                <pre><code>&lt;form action="/login"
+      method="post"&gt;
+    &lt;input type="email"
+           name="email"&gt;
+    &lt;input type="password"
+           name="password"&gt;
+    &lt;button&gt;Login&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+            </div>
+            <div>
+                <div class="code-row-label">Controller handler</div>
+                <pre><code>public void loginPost(
+        Request req, Response res) {
+
+    String email = req.input("email");
+    String pass  = req.input("password");
+
+    // validate...
+    req.session().set("user_id", userId);
+    res.redirect("/dashboard");
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ORM -->
+<div id="orm" class="demo-section">
+    <div class="demo-section-header"><h2>Active Record ORM</h2></div>
+    <div class="demo-section-body">
+        <p>Models extend <code>Repository&lt;T&gt;</code>. Define relations with <code>@HasMany</code> and <code>@BelongsTo</code>. Migrations run automatically or generate from annotations.</p>
+        <div class="code-row">
+            <div>
+                <div class="code-row-label">Model definition</div>
+                <pre><code>@Table("users")
+public class User {
+
+    @Column
+    private int id;
+
+    @Column
+    private String name;
+
+    @Column
+    private String email;
+
+    @HasMany(
+        foreignKey = "user_id",
+        related = Post.class
+    )
+    private List&lt;Post&gt; posts;
+}</code></pre>
+            </div>
+            <div>
+                <div class="code-row-label">Querying</div>
+                <pre><code>UserRepository users =
+    new UserRepository();
+
+// Find by primary key
+User u = users.find(1);
+
+// Find all
+List&lt;User&gt; all = users.all();
+
+// Eager load relations
+User u = users.with("posts")
+              .find(1);
+
+// Create
+User u = new User();
+u.setName("Whilmar");
+u.setEmail("w@dev.com");
+users.save(u);</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Middleware -->
+<div id="middleware" class="demo-section">
+    <div class="demo-section-header"><h2>Middleware Pipeline</h2></div>
+    <div class="demo-section-body">
+        <p>Global middleware runs on every request. Named middleware can be attached to specific routes. Auth, logging, sessions, CORS — plug them in where needed.</p>
+        <div class="code-row">
+            <div>
+                <div class="code-row-label">Global middleware</div>
+                <pre><code>public void global() {
+    addGlobal(new LogsMiddleware());
+    addGlobal(new SessionMiddleware());
+    addGlobal(new CorsMiddleware());
+}</code></pre>
+            </div>
+            <div>
+                <div class="code-row-label">Per-route middleware</div>
+                <pre><code>public void register() {
+    add("auth", new AuthMiddleware());
+
+    // Apply to specific routes
+    router.get("/dashboard",
+        DashboardController.class,
+        "index",
+        "auth");  // requires auth
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Screenshots -->
+<div id="screenshots" class="demo-section">
+    <div class="demo-section-header"><h2>Screenshots</h2></div>
+    <div class="demo-section-body">
+        <p>Shock running in production. Lightweight, fast, no servlet container.</p>
+        <div class="code-row">
+            <div class="screenshot-block">
+                <img src="/static/img/screenshot-landing.png" alt="Shock landing page" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <p style="display:none;color:var(--text-muted);padding:2rem 0;">Run the app and visit <code>/</code> to see the landing page</p>
+                <p><strong>Landing Page</strong><br>Clean design, code examples, feature showcase</p>
+            </div>
+            <div class="screenshot-block">
+                <img src="/static/img/screenshot-todo.png" alt="Shock todo demo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <p style="display:none;color:var(--text-muted);padding:2rem 0;">Run the app and visit <code>/todo</code> to see the todo demo</p>
+                <p><strong>Todo App</strong><br>Template engine with for/if/else, form POST handling</p>
+            </div>
+        </div>
+        <div class="code-row" style="margin-top:1rem;">
+            <div class="screenshot-block">
+                <img src="/static/img/screenshot-error.png" alt="Shock error page" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <p style="display:none;color:var(--text-muted);padding:2rem 0;">Trigger an error to see the dev error page</p>
+                <p><strong>Error Page</strong><br>Stack traces, dev-friendly error display</p>
+            </div>
+            <div class="screenshot-block">
+                <img src="/static/img/screenshot-demo.png" alt="Shock demo page" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <p style="display:none;color:var(--text-muted);padding:2rem 0;">Run the app and visit <code>/demo</code> to see this page</p>
+                <p><strong>Demo Page</strong><br>Interactive feature showcase with code examples</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <p>Shock Framework · Built by <a href="https://github.com/whilmarbitoco" target="_blank" rel="noopener">Whilmar Bitoco</a> · MIT License</p>
+    </div>
+</footer>
+</body>
+</html>
