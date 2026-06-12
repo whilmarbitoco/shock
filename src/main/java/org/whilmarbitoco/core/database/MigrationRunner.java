@@ -7,48 +7,51 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 /**
- * Simple migration runner.
- * Reads SQL migration files from classpath (src/main/resources/migrations/)
- * that haven't been applied yet, and executes them in order.
+ * Simple migration runner. Reads SQL migration files from classpath
+ * and executes them in order, tracking applied versions.
  *
- * A `schema_migrations` table is created automatically to track which
- * migrations have been applied. Migration files should be named:
- *   V1__create_users_table.sql
- *   V2__add_email_to_users.sql
- *   etc.
+ * Dialect-aware — uses the dialect auto-detected from config.dbUrl()
+ * for the migration tracking table schema.
  *
- * The version number is extracted from the filename (the number after V and before __).
+ * Migration files should be named: V{version}__{description}.sql
+ * and placed in src/main/resources/migrations/.
  */
 public class MigrationRunner {
 
     private static final String MIGRATION_PATH = "migrations/";
-    private static final String TABLE = "schema_migrations";
 
+    /**
+     * Run all pending migrations using the dialect from config.
+     */
     public static void run() {
+        Dialect dialect = Dialect.fromUrl(Config.dbUrl());
+        run(dialect);
+    }
+
+    /**
+     * Run all pending migrations using the specified dialect.
+     */
+    public static void run(Dialect dialect) {
         Connection conn = DBConnection.getConnection();
         try {
-            createMigrationsTable(conn);
-            runPendingMigrations(conn);
+            createMigrationsTable(conn, dialect);
+            runPendingMigrations(conn, dialect);
         } catch (Exception e) {
             throw new RuntimeException("[Migration] Failed: " + e.getMessage(), e);
         }
     }
 
-    private static void createMigrationsTable(Connection conn) throws Exception {
-        String sql = "CREATE TABLE IF NOT EXISTS " + TABLE + " ("
-                + "version INT PRIMARY KEY,"
-                + "applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-                + ")";
+    private static void createMigrationsTable(Connection conn, Dialect dialect) throws Exception {
+        String sql = dialect.createMigrationsTable("schema_migrations");
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         }
     }
 
-    private static void runPendingMigrations(Connection conn) throws Exception {
+    private static void runPendingMigrations(Connection conn, Dialect dialect) throws Exception {
         var resources = MigrationRunner.class.getClassLoader().getResources(MIGRATION_PATH);
         while (resources.hasMoreElements()) {
             var url = resources.nextElement();
-            // Handle both file: and jar: URLs
             if ("file".equals(url.getProtocol())) {
                 File dir = new File(url.toURI());
                 File[] files = dir.listFiles((d, name) -> name.endsWith(".sql"));
@@ -56,8 +59,8 @@ public class MigrationRunner {
                 java.util.Arrays.sort(files);
                 for (File file : files) {
                     int version = extractVersion(file.getName());
-                    if (version > 0 && !isApplied(conn, version)) {
-                        applyMigration(conn, file, version);
+                    if (version > 0 && !isApplied(conn, dialect, version)) {
+                        applyMigration(conn, dialect, file, version);
                     }
                 }
             }
@@ -65,31 +68,28 @@ public class MigrationRunner {
     }
 
     private static int extractVersion(String filename) {
-        // V1__description.sql -> 1
         try {
             if (filename.startsWith("V") && filename.contains("__")) {
                 String num = filename.substring(1, filename.indexOf("__"));
                 return Integer.parseInt(num);
             }
-        } catch (NumberFormatException e) {
-            // skip
-        }
+        } catch (NumberFormatException e) { /* skip */ }
         return -1;
     }
 
-    private static boolean isApplied(Connection conn, int version) throws Exception {
-        String sql = "SELECT 1 FROM " + TABLE + " WHERE version = " + version;
+    private static boolean isApplied(Connection conn, Dialect dialect, int version) throws Exception {
+        String sql = dialect.checkMigrationVersion("schema_migrations", version);
         try (Statement stmt = conn.createStatement();
              var rs = stmt.executeQuery(sql)) {
             return rs.next();
         }
     }
 
-    private static void applyMigration(Connection conn, File file, int version) throws Exception {
+    private static void applyMigration(Connection conn, Dialect dialect, File file, int version) throws Exception {
         String sql = new String(java.nio.file.Files.readAllBytes(file.toPath()));
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            stmt.execute("INSERT INTO " + TABLE + " (version) VALUES (" + version + ")");
+            stmt.execute(dialect.insertMigrationVersion("schema_migrations", version));
         }
         if (Config.debug()) {
             System.out.println("[Migration] Applied V" + version + ": " + file.getName());

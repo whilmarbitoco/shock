@@ -34,7 +34,7 @@ public abstract class Repository<T> {
 
     public Repository(Class<T> type) {
         this.entityManager = new EntityManager<>(type);
-        this.builder = new Builder();
+        this.builder = new Builder();  // auto-detects dialect from config
         this.mapper = new Mapper(type);
         this.tableName = entityManager.getTable();
         this.columns = entityManager.getColumns();
@@ -164,7 +164,7 @@ public abstract class Repository<T> {
     }
 
     public List<T> paginate(int page, int pageSize) {
-        String query = builder.select(tableName).limit(pageSize).offset((page - 1) * pageSize).build();
+        String query = builder.select(tableName).limitOffset(pageSize, (page - 1) * pageSize).build();
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
             return executeQuery(stmt).list();
         } catch (SQLException err) {
