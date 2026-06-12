@@ -11,10 +11,10 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Database connection manager with a built-in lightweight connection pool.
  *
- * No external dependencies required. Uses DriverManager internally with a
- * simple blocking queue pool. For production, you can swap this with HikariCP
- * by overriding the dataSource in a subclass or using the HikariDBConnection
- * variant if HikariCP is on the classpath.
+ * No external pool library required. Uses DriverManager internally with a
+ * simple blocking queue pool. Detects the JDBC driver automatically from the
+ * classpath (JDBC 4.0+ SPI), so whichever driver you include (MySQL,
+ * PostgreSQL, SQLite) is picked up without configuration.
  *
  * Configure in config.properties:
  * <pre>
