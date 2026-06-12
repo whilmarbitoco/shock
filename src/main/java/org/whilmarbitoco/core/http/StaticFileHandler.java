@@ -17,7 +17,7 @@ public class StaticFileHandler {
     }
 
     public void handle(String path, Response response) {
-        String relativePath = path.replaceFirst("^/static/", "");
+        String relativePath = "public/" + path.replaceFirst("^/static/", "");
         Path filePath = Paths.get(basePath, relativePath).normalize();
 
         if (!filePath.startsWith(Paths.get(basePath).normalize())) {
