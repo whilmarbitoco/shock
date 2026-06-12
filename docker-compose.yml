@@ -8,15 +8,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      APP_PORT: 8080
-      DB_DRIVER: mysql
       DB_URL: jdbc:mysql://db:3306/shock_app?useSSL=false&allowPublicKeyRetrieval=true
       DB_USER: shock
       DB_PASSWORD: shock
       DB_POOL_SIZE: 10
     volumes:
-      - ./views:/app/views:ro
-      - ./public:/app/public:ro
       - app_data:/app/data
     depends_on:
       db:

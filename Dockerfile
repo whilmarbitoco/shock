@@ -1,4 +1,4 @@
-# ---- Stage 1: Build the framework JAR ----
+# ---- Stage 1: Build the fat JAR ----
 FROM eclipse-temurin:24-jdk AS builder
 
 WORKDIR /build
@@ -6,31 +6,31 @@ WORKDIR /build
 COPY pom.xml .
 COPY src ./src
 
-# Build JAR — sqlite profile has no external DB dependency
+# Install Maven and build a shaded (fat) JAR with all dependencies
+# sqlite profile has no external JDBC dependency
 RUN apt-get update && apt-get install -y maven > /dev/null 2>&1 && \
-    mvn package -B -P sqlite -DskipTests && \
-    mv target/mvc-framework-*.jar target/shock.jar
+    mvn package -B -P sqlite -DskipTests
 
 # ---- Stage 2: Runtime ----
 FROM eclipse-temurin:24-jre
 
+# Create non-root user
 RUN groupadd -r app && useradd -r -g app -d /app -s /sbin/nologin app
 
 WORKDIR /app
 
-COPY --from=builder /build/target/shock.jar ./lib/shock.jar
+# Copy the fat JAR from builder
+COPY --from=builder /build/target/shock.jar ./shock.jar
 
-# Configurable at runtime via -e or mounted config
-ENV APP_PORT=8080
-ENV DB_DRIVER=sqlite
+# Runtime configuration (override with docker run -e or docker-compose)
+ENV SERVER_PORT=8080
 ENV DB_URL=jdbc:sqlite:/app/data/app.db
 ENV DB_POOL_SIZE=5
 
-RUN mkdir -p /app/data /app/views /app/public && chown -R app:app /app
+RUN mkdir -p /app/data && chown -R app:app /app
 
 USER app
 
-EXPOSE ${APP_PORT}
+EXPOSE 8080
 
-# Replace ENTRYPOINT with your app's main class:
-#   java -cp "/app/lib/shock.jar:/*" com.company.Main
+ENTRYPOINT ["java", "-jar", "/app/shock.jar"]
