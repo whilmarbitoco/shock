@@ -8,6 +8,6 @@ import org.whilmarbitoco.core.view.View;
 public class IndexController extends Controller {
 
     public String get(Request request, Response response) {
-        return view(null).render("index.html");
+        return new org.whilmarbitoco.core.view.View().render("index.html");
     }
 }

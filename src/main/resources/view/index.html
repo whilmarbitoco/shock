@@ -3,201 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wb2c0NET - Modern Java MVC Framework</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-image: linear-gradient(to bottom, #1a202c, #12171f);
-            background-color: #1a202c;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            color: #f7fafc;
-        }
-
-        .container {
-            text-align: center;
-            padding: 3rem;
-            border-radius: 1rem;
-            /* Removed background-color, box-shadow, and backdrop-filter */
-            max-width: 90%;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .hero {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 60vh;
-        }
-
-        .main-heading {
-            font-size: 3rem;
-            font-weight: 800;
-            /* Removed color: #f56565; */
-            margin-bottom: 2rem;
-            letter-spacing: -0.02em;
-            /* Removed text-shadow */
-            background: linear-gradient(to right, #f56565, #ed8936); /* Gradient for text */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block; /* Important for the gradient to work */
-        }
-
-        .tagline {
-            font-size: 1.5rem;
-            margin-bottom: 3rem;
-            line-height: 1.8;
-            color: #e2e8f0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            font-weight: 300;
-            max-width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2.25rem;
-            background-color: #f56565;
-            color: #fff;
-            font-weight: 700;
-            text-decoration: none;
-            border-radius: 0.5rem;
-            transition: all 0.2s ease;
-            font-size: 1.25rem;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            border: 1px solid transparent;
-            cursor: pointer;
-        }
-
-        .cta-button:hover {
-            background-color: #ed8936;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .cta-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 4px rgba(0, 0, 0, 0.15);
-        }
-
-        .features {
-            margin-top: 5rem;
-            text-align: left;
-            width: 100%;
-            max-width: 1000px;
-        }
-
-        .features-heading {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 2.5rem;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-
-        .feature-item {
-            text-align: center;
-            margin-bottom: 0;
-            font-size: 1rem;
-            line-height: 1.9;
-            background-color: rgba(255, 255, 255, 0.04);
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            backdrop-filter: blur(7px);
-        }
-
-        .feature-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-        }
-
-         .feature-item p {
-             font-size: .8rem;
-         }
-
-        .feature-item strong {
-            color: #f56565;
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                width: 80%;
-            }
-
-            .feature-list {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .container {
-                width: 70%;
-            }
-
-            .feature-list {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-    </style>
+    <title>Shock — Lightweight Java MVC Framework</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-<div class="container">
-   <div class="hero">
-       <h1 class="main-heading">Shock</h1>
-       <p class="tagline">A modern, lightweight, and efficient Java MVC web framework for building robust and scalable web applications.</p>
-       <a href="/todo" class="cta-button">Sample App</a>
-   </div>
 
-    <div class="features">
-        <h2 class="features-heading">Key Features</h2>
-        <ul class="feature-list">
-            <li class="feature-item">
-                <strong>Modern Architecture</strong>
-                <p>Built with a focus on modern design principles and best practices.</p>
-            </li>
-            <li class="feature-item">
-                <strong>Lightweight & Fast</strong>
-                <p>Minimal overhead and optimized for high performance.</p>
-            </li>
-            <li class="feature-item">
-                <strong>MVC Pattern</strong>
-                <p>Clean and organized code with a strong separation of concerns.</p>
-            </li>
-            <li class="feature-item">
-                <strong>Dynamic Routing</strong>
-                <p>Flexible and intuitive routing system for easy URL mapping.</p>
-            </li>
-            <li class="feature-item">
-                <strong>Customizable Error Handling</strong>
-                <p>Create elegant and informative error pages.</p>
-            </li>
-            <li class="feature-item">
-                <strong>Scalable</strong>
-                <p>Designed to handle growing traffic and complexity.</p>
-            </li>
-        </ul>
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-brand">⚡ Shock</a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#quickstart">Quick Start</a>
+            <a href="/demo">Demo</a>
+            <a href="https://github.com/whilmarbitoco/shock" target="_blank" rel="noopener">GitHub</a>
+        </div>
     </div>
-</div>
+</nav>
+
+<section class="hero">
+    <div class="hero-inner">
+        <p class="hero-badge">Java 24 · Zero Servlet Container · Raw ServerSocket</p>
+        <h1 class="hero-title">A lightweight MVC framework<br><span class="hero-title-accent">built for speed</span></h1>
+        <p class="hero-desc">
+            Routing, ORM, migrations, template engine, middleware — no Spring, no servlet container,
+            no magic. Just a <code class="inline-code">ServerSocket</code> and clean Java.
+        </p>
+        <div class="hero-actions">
+            <a href="#quickstart" class="btn btn-primary">Get Started</a>
+            <a href="/demo" class="btn btn-secondary">Live Demo</a>
+        </div>
+
+        <div class="hero-code">
+            <div class="hero-code-header">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="hero-code-filename">Application.java</span>
+            </div>
+            <pre><code><span class="kw">public class</span> <span class="cls">Application</span> {
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        RouteRegistry routes = <span class="kw">new</span> <span class="fn">Routes</span>();
+        MiddlewareRegistry middlewares = <span class="kw">new</span> <span class="fn">Middlewares</span>();
+
+        Application app = <span class="kw">new</span> <span class="fn">Application</span>(routes, middlewares);
+        app.<span class="fn">run</span>();
+    }
+}</code></pre>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="features">
+    <div class="section-inner">
+        <h2 class="section-title">Why Shock?</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">🚀</div>
+                <h3 class="card-title">No Servlet Container</h3>
+                <p class="card-desc">Runs on a raw <code>ServerSocket</code>. No Tomcat, no Jetty, no Spring Boot. Starts in milliseconds.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🗄️</div>
+                <h3 class="card-title">Active Record ORM</h3>
+                <p class="card-desc"><code>HasMany</code>, <code>BelongsTo</code> relations, eager loading, migrations — all built in. No Hibernate needed.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔀</div>
+                <h3 class="card-title">Dynamic Routing</h3>
+                <p class="card-desc">Clean route definitions with middleware support. GET, POST, PUT, DELETE, PATCH — all first-class.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🧩</div>
+                <h3 class="card-title">Middleware Pipeline</h3>
+                <p class="card-desc">Global and per-route middleware. Auth, logging, sessions, CORS — plug them in where you need them.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📐</div>
+                <h3 class="card-title">Template Engine</h3>
+                <p class="card-desc"><code>{{variable}}</code>, <code>{% if %}</code>, <code>{% for %}</code>, <code>{% else %}</code> — simple, fast, no external deps.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔌</div>
+                <h3 class="card-title">Multi-Database</h3>
+                <p class="card-desc">MySQL, PostgreSQL, SQLite via dialect abstraction. Maven profiles keep your POM clean.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🏊</div>
+                <h3 class="card-title">Built-In Connection Pool</h3>
+                <p class="card-desc">Lightweight <code>ArrayBlockingQueue</code> pool. No HikariCP dependency needed.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🐳</div>
+                <h3 class="card-title">Docker-Ready</h3>
+                <p class="card-desc">Multi-stage Dockerfile, docker-compose with DB profiles. Production-ready out of the box.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="quickstart" class="quickstart">
+    <div class="section-inner">
+        <h2 class="section-title">Quick Start</h2>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+                <h3>Add the dependency</h3>
+                <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.whilmarbitoco&lt;/groupId&gt;
+    &lt;artifactId&gt;mvc-framework&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+                <h3>Define your routes</h3>
+                <pre><code><span class="kw">public class</span> <span class="cls">Routes</span> <span class="kw">extends</span> RouteRegistry {
+    <span class="kw">public void</span> <span class="fn">register</span>() {
+        router.<span class="fn">get</span>(<span class="str">"/"</span>, HomeController.class, <span class="str">"index"</span>);
+        router.<span class="fn">get</span>(<span class="str">"/users"</span>, UserController.class, <span class="str">"list"</span>);
+        router.<span class="fn">post</span>(<span class="str">"/users"</span>, UserController.class, <span class="str">"create"</span>);
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+                <h3>Write a controller</h3>
+                <pre><code><span class="kw">public class</span> <span class="cls">HomeController</span> {
+
+    <span class="kw">public void</span> <span class="fn">index</span>(Request req, Response res) {
+        res.<span class="fn">view</span>(<span class="str">"index"</span>, Map.<span class="fn">of</span>(
+            <span class="str">"title"</span>, <span class="str">"Welcome to Shock"</span>
+        ));
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+                <h3>Write a template</h3>
+                <pre><code class="language-html">&lt;h1&gt;{{title}}&lt;/h1&gt;
+
+{% if users.empty %}
+    &lt;p&gt;No users yet.&lt;/p&gt;
+{% else %}
+    &lt;ul&gt;
+    {% for user in users %}
+        &lt;li&gt;{{user.name}} — {{user.email}}&lt;/li&gt;
+    {% endfor %}
+    &lt;/ul&gt;
+{% endif %}</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-body">
+                <h3>Run it</h3>
+                <pre><code class="language-bash"># Build
+mvn package -B -P sqlite
+
+# Run
+java -cp "target/*:." com.app.Main
+
+# Or with Docker
+docker compose up --build</code></pre>
+            </div>
+        </div>
+
+        <div class="quick-links">
+            <a href="/demo" class="btn btn-primary">See Live Demo →</a>
+            <a href="https://github.com/whilmarbitoco/shock/blob/main/README.md" target="_blank" rel="noopener" class="btn btn-secondary">Full Documentation</a>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <p>Shock Framework · Built by <a href="https://github.com/whilmarbitoco" target="_blank" rel="noopener">Whilmar Bitoco</a> · MIT License</p>
+    </div>
+</footer>
+
 </body>
 </html>
