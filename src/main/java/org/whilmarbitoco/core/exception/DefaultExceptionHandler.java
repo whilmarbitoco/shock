@@ -7,10 +7,12 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public void handler(Exception exception, Request request, Response response) {
-
-        if (exception instanceof HttpException) {
-
+        if (exception instanceof HttpException httpEx) {
+            response.setStatus(httpEx.getCode());
+            response.send(httpEx.getMessage());
+        } else {
+            response.setStatus(500);
+            response.send("Internal Server Error");
         }
-
     }
 }

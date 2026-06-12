@@ -3,9 +3,16 @@ package org.whilmarbitoco.core.session;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * In-memory session and flash storage.
+ *
+ * NOTE: Sessions are stored in static HashMaps and are lost on server restart.
+ * They are also not shared across multiple server instances.
+ * For production use, replace this with a persistent store (Redis, database, etc.).
+ */
 public class SessionManager {
-    private static Map<String, Map<String, String>> sessions = new HashMap<>();
-    private static Map<String, Map<String, String>> flash = new HashMap<>();
+    private static final Map<String, Map<String, String>> sessions = new HashMap<>();
+    private static final Map<String, Map<String, String>> flash = new HashMap<>();
 
 
     public static Map<String, String> session(String sessionID) {

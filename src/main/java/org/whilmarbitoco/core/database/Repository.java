@@ -210,11 +210,20 @@ public abstract class Repository<T> {
             if (rs.next()) {
                 return rs.getInt("count");
             }
-
             return 0;
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
+    }
+
+    public List<T> paginate(int page, int pageSize) {
+        String query = builder.select(tableName).limit(pageSize).offset((page - 1) * pageSize).build();
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
+            return executeQuery(stmt).list();
+        } catch (SQLException err) {
+            throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
+        }
+    }
     }
 
     protected QueryResult<T> executeQuery(PreparedStatement stmt) {

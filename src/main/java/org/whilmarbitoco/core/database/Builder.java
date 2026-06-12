@@ -54,10 +54,56 @@ public class Builder {
         return this;
     }
 
+    public Builder and(String condition) {
+        query.append(" AND ");
+        query.append(condition);
+        return this;
+    }
+
+    public Builder or(String condition) {
+        query.append(" OR ");
+        query.append(condition);
+        return this;
+    }
 
     public Builder like(String str) {
         query.append(" LIKE ");
         query.append(str);
+        return this;
+    }
+
+    public Builder orderBy(String column) {
+        query.append(" ORDER BY ").append(column);
+        return this;
+    }
+
+    public Builder orderBy(String column, String direction) {
+        query.append(" ORDER BY ").append(column).append(" ").append(direction);
+        return this;
+    }
+
+    public Builder limit(int limit) {
+        query.append(" LIMIT ").append(limit);
+        return this;
+    }
+
+    public Builder offset(int offset) {
+        query.append(" OFFSET ").append(offset);
+        return this;
+    }
+
+    public Builder join(String joinClause) {
+        query.append(" ").append(joinClause);
+        return this;
+    }
+
+    public Builder innerJoin(String table, String onCondition) {
+        query.append(" INNER JOIN ").append(table).append(" ON ").append(onCondition);
+        return this;
+    }
+
+    public Builder leftJoin(String table, String onCondition) {
+        query.append(" LEFT JOIN ").append(table).append(" ON ").append(onCondition);
         return this;
     }
 
@@ -76,7 +122,6 @@ public class Builder {
         query.append(String.join(" = ?, ", columns)).append(" = ?");
         return this;
     }
-
 
     public String build() {
         query.append(";");
