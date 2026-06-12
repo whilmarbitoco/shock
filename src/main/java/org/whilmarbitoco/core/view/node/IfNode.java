@@ -18,8 +18,8 @@ public class IfNode extends Node {
     public String render(Map<String, Object> context) {
         Object condValue = context.get(condition);
 
-        if (condValue instanceof Boolean && (Boolean) condValue) {
-          return processBody(context);
+        if (condValue instanceof Boolean) {
+            return (Boolean) condValue ? processBody(context) : "";
         }
 
         if (condValue != null) {

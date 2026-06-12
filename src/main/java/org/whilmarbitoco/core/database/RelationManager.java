@@ -35,6 +35,7 @@ public class RelationManager {
      * Eager-load named relations on a single entity.
      */
     public void eagerLoad(Object entity, String... relationFields) {
+        if (entity == null) return;
         for (String fieldName : relationFields) {
             loadRelation(entity, fieldName);
         }

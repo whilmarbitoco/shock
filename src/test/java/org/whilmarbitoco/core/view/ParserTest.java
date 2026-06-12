@@ -155,7 +155,7 @@ class ParserTest {
         assertTrue(nodes.get(1) instanceof IfNode);
 
         assertEquals("A", nodes.get(0).render(Map.of("a", true, "b", false)));
-        assertEquals("B", nodes.get(1).render(Map.of("a", true, "b", false)));
+        assertEquals("", nodes.get(1).render(Map.of("a", true, "b", false)));
     }
 
     @Test
