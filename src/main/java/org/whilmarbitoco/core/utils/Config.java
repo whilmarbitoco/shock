@@ -55,4 +55,12 @@ public class Config {
     public static String viewPath() {
         return resources() + "view/";
     }
+
+    public static int poolSize() {
+        try {
+            return Integer.parseInt(props.getProperty("db.pool.size", "5"));
+        } catch (NumberFormatException e) {
+            return 5;
+        }
+    }
 }

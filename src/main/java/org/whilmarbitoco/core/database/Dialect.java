@@ -79,6 +79,10 @@ public interface Dialect {
     // ── Dialect detection ────────────────────────────────────────
 
     /** Returns the JDBC driver class name for this dialect. */
+    /**
+     * JDBC driver class name. Used for explicit loading if needed.
+     * Most modern JDBC 4.0+ drivers auto-register via SPI, so this may return empty.
+     */
     String driverClass();
 
     /** Returns the default JDBC URL prefix for this dialect. */

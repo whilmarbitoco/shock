@@ -1,64 +1,96 @@
 package org.whilmarbitoco.core.database;
 
 import org.whilmarbitoco.core.utils.Config;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
- * Database connection manager using HikariCP connection pooling.
- * Dialect-aware — auto-detects the database type from the JDBC URL
- * and configures the connection pool accordingly.
+ * Database connection manager with a built-in lightweight connection pool.
  *
- * Supported databases:
- * - MySQL / MariaDB (jdbc:mysql://, jdbc:mariadb://)
- * - PostgreSQL (jdbc:postgresql://)
- * - SQLite (jdbc:sqlite:)
+ * No external dependencies required. Uses DriverManager internally with a
+ * simple blocking queue pool. For production, you can swap this with HikariCP
+ * by overriding the dataSource in a subclass or using the HikariDBConnection
+ * variant if HikariCP is on the classpath.
  *
  * Configure in config.properties:
  * <pre>
  * db.url=jdbc:mysql://localhost:3306/mydb
  * db.user=root
  * db.password=secret
- * </pre>
- *
- * To switch to PostgreSQL, just change the URL:
- * <pre>
- * db.url=jdbc:postgresql://localhost:5432/mydb
- * </pre>
- *
- * Or for SQLite:
- * <pre>
- * db.url=jdbc:sqlite:mydb.sqlite
+ * db.pool.size=10
  * </pre>
  */
 public class DBConnection {
 
-    private static final HikariDataSource dataSource;
+    private static final int DEFAULT_POOL_SIZE = 5;
+    private static BlockingQueue<Connection> pool;
+    private static String url;
+    private static String user;
+    private static String password;
+    private static int poolSize;
 
     static {
-        Dialect dialect = Dialect.fromUrl(Config.dbUrl());
-
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(Config.dbUrl());
-        config.setUsername(Config.dbUser());
-        config.setPassword(Config.dbPassword());
-        config.setDriverClassName(dialect.driverClass());
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(2);
-        config.setIdleTimeout(30000);
-        config.setConnectionTimeout(10000);
-        config.setMaxLifetime(1800000);
-        dataSource = new HikariDataSource(config);
+        url = Config.dbUrl();
+        user = Config.dbUser();
+        password = Config.dbPassword();
+        poolSize = Config.poolSize();
+        if (poolSize <= 0) poolSize = DEFAULT_POOL_SIZE;
+        pool = new ArrayBlockingQueue<>(poolSize);
     }
 
+    /**
+     * Get a connection from the pool. Creates a new one if the pool is empty.
+     * Callers must close the connection to return it to the pool.
+     */
     public static Connection getConnection() {
+        Connection conn = pool.poll();
+        if (conn != null) {
+            try {
+                if (!conn.isClosed() && conn.isValid(2)) {
+                    return conn;
+                }
+            } catch (SQLException e) {
+                // Connection is dead, create a new one
+            }
+        }
+        return createConnection();
+    }
+
+    /**
+     * Return a connection to the pool. Called automatically when Connection.close() is invoked.
+     */
+    public static void returnConnection(Connection conn) {
+        if (conn == null) return;
         try {
-            return dataSource.getConnection();
+            if (!conn.isClosed() && conn.isValid(2)) {
+                pool.offer(conn);
+            }
         } catch (SQLException e) {
-            throw new RuntimeException("Error connecting to the database", e);
+            // Connection is dead, don't return it
+        }
+    }
+
+    private static Connection createConnection() {
+        try {
+            return DriverManager.getConnection(url, user, password);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error connecting to database: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Close all connections in the pool. Call on application shutdown.
+     */
+    public static void shutdown() {
+        Connection conn;
+        while ((conn = pool.poll()) != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) { /* ignore */ }
         }
     }
 }
