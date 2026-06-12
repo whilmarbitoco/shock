@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.*;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -177,12 +178,12 @@ class RelationManagerTest {
         @Override public void moveToInsertRow() {}
         @Override public void moveToCurrentRow() {}
         @Override public java.sql.Statement getStatement() { return null; }
-        @Override public Object getObject(int i, java.util.Map<String, Class<?>> m) { throw new UnsupportedOperationException(); }
+        @Override public Object getObject(int i, Map<String, Class<?>> m) { throw new UnsupportedOperationException(); }
         @Override public java.sql.Ref getRef(int i) { throw new UnsupportedOperationException(); }
         @Override public java.sql.Blob getBlob(int i) { throw new UnsupportedOperationException(); }
         @Override public java.sql.Clob getClob(int i) { throw new UnsupportedOperationException(); }
         @Override public java.sql.Array getArray(int i) { throw new UnsupportedOperationException(); }
-        @Override public Object getObject(String c, java.util.Map<String, Class<?>> m) { throw new UnsupportedOperationException(); }
+        @Override public Object getObject(String c, Map<String, Class<?>> m) { throw new UnsupportedOperationException(); }
         @Override public java.sql.Ref getRef(String c) { throw new UnsupportedOperationException(); }
         @Override public java.sql.Blob getBlob(String c) { throw new UnsupportedOperationException(); }
         @Override public java.sql.Clob getClob(String c) { throw new UnsupportedOperationException(); }
@@ -211,8 +212,8 @@ class RelationManagerTest {
         @Override public boolean isClosed() { return false; }
         @Override public void updateNString(int i, String s) {}
         @Override public void updateNString(String c, String s) {}
-        @Override public void updateNClob(int i, java.sql.Clob c) {}
-        @Override public void updateNClob(String c, java.sql.Clob c) {}
+        @Override public void updateNClob(int i, java.sql.NClob nClob) {}
+        @Override public void updateNClob(String columnLabel, java.sql.NClob nClob) {}
         @Override public java.sql.NClob getNClob(int i) { throw new UnsupportedOperationException(); }
         @Override public java.sql.NClob getNClob(String c) { throw new UnsupportedOperationException(); }
         @Override public java.sql.SQLXML getSQLXML(int i) { throw new UnsupportedOperationException(); }
@@ -254,7 +255,7 @@ class RelationManagerTest {
         @Override public <T> T getObject(int i, Class<T> t) { throw new UnsupportedOperationException(); }
         @Override public <T> T getObject(String c, Class<T> t) { throw new UnsupportedOperationException(); }
         @Override public <T> T unwrap(Class<T> t) { throw new UnsupportedOperationException(); }
-        @Override public boolean isWrapperFor(Class<T> t) { return false; }
+        @Override public boolean isWrapperFor(Class<?> t) { return false; }
     }
 
     static class FakePreparedStatement implements PreparedStatement {
@@ -270,6 +271,7 @@ class RelationManagerTest {
         @Override public void setObject(int i, Object v) { params[i - 1] = v; paramCount++; }
         @Override public ResultSet executeQuery() { return null; }
         @Override public void close() {}
+        @Override public void clearParameters() {}
 
         // Stubs
         @Override public java.sql.ResultSet executeQuery(String s) { return null; }
@@ -316,7 +318,7 @@ class RelationManagerTest {
         @Override public void closeOnCompletion() {}
         @Override public boolean isCloseOnCompletion() { return false; }
         @Override public <T> T unwrap(Class<T> t) { throw new UnsupportedOperationException(); }
-        @Override public boolean isWrapperFor(Class<T> t) { return false; }
+        @Override public boolean isWrapperFor(Class<?> t) { return false; }
         @Override public void setNull(int i, int s) {}
         @Override public void setBoolean(int i, boolean x) {}
         @Override public void setByte(int i, byte x) {}
@@ -351,7 +353,6 @@ class RelationManagerTest {
         @Override public java.sql.ParameterMetaData getParameterMetaData() { return null; }
         @Override public void setRowId(int i, java.sql.RowId x) {}
         @Override public void setNString(int i, String v) {}
-        @Override public void setNCharacterStream(int i, java.io.Reader r, long l) {}
         @Override public void setNClob(int i, java.sql.NClob v) {}
         @Override public void setClob(int i, java.io.Reader r, long l) {}
         @Override public void setBlob(int i, java.io.InputStream x, long l) {}
@@ -361,6 +362,7 @@ class RelationManagerTest {
         @Override public void setObject(int i, Object x, java.sql.SQLType t) {}
         @Override public long executeLargeUpdate() { return 0; }
         @Override public void setAsciiStream(int i, java.io.InputStream x) {}
+        @Override public void setUnicodeStream(int i, java.io.InputStream x, int l) {}
         @Override public void setBinaryStream(int i, java.io.InputStream x) {}
         @Override public void setBlob(int i, java.io.InputStream x) {}
         @Override public void setClob(int i, java.io.Reader r) {}
@@ -410,9 +412,10 @@ class RelationManagerTest {
         @Override public void clearWarnings() {}
         @Override public Statement createStatement(int r, int c) { return null; }
         @Override public PreparedStatement prepareStatement(String s, int r, int c) { return null; }
+        @Override public java.sql.CallableStatement prepareCall(String s) { return null; }
         @Override public java.sql.CallableStatement prepareCall(String s, int r, int c) { return null; }
-        @Override public java.util.Map<String, Class<?>> getTypeMap() { return null; }
-        @Override public void setTypeMap(java.util.Map<String, Class<?>> m) {}
+        @Override public Map<String, Class<?>> getTypeMap() { return null; }
+        @Override public void setTypeMap(Map<String, Class<?>> m) {}
         @Override public void setHoldability(int h) {}
         @Override public int getHoldability() { return 0; }
         @Override public Savepoint setSavepoint() { return null; }
@@ -441,8 +444,9 @@ class RelationManagerTest {
         @Override public void abort(java.util.concurrent.Executor e) {}
         @Override public void setNetworkTimeout(java.util.concurrent.Executor e, int m) {}
         @Override public int getNetworkTimeout() { return 0; }
+        @Override public String nativeSQL(String sql) { return sql; }
         @Override public <T> T unwrap(Class<T> t) { throw new UnsupportedOperationException(); }
-        @Override public boolean isWrapperFor(Class<T> t) { return false; }
+        @Override public boolean isWrapperFor(Class<?> t) { return false; }
     }
 
     // ── Tests ─────────────────────────────────────────────────────

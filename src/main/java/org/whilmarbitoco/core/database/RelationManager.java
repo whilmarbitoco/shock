@@ -235,11 +235,20 @@ public class RelationManager {
 
     private Field findField(Class<?> type, String name) {
         while (type != null && type != Object.class) {
+            // First try direct field name match
             try {
                 return type.getDeclaredField(name);
             } catch (NoSuchFieldException e) {
-                type = type.getSuperclass();
+                // Fall through to check @Column annotation
             }
+            // Check @Column annotation name attribute
+            for (Field f : type.getDeclaredFields()) {
+                Column col = f.getAnnotation(Column.class);
+                if (col != null && col.name().equals(name)) {
+                    return f;
+                }
+            }
+            type = type.getSuperclass();
         }
         return null;
     }

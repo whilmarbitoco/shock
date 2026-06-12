@@ -3,6 +3,7 @@ package org.whilmarbitoco.core;
 import org.whilmarbitoco.core.session.SessionManager;
 import org.whilmarbitoco.core.utils.Config;
 import org.whilmarbitoco.core.view.View;
+import org.whilmarbitoco.core.http.Request;
 import org.whilmarbitoco.database.model.User;
 
 import java.util.Map;

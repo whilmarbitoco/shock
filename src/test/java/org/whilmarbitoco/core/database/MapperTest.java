@@ -31,6 +31,12 @@ class MapperTest {
 
         User() {}
 
+        User(int id, String username, String email) {
+            this.id = id;
+            this.username = username;
+            this.email = email;
+        }
+
         int getId() { return id; }
         String getUsername() { return username; }
         String getEmail() { return email; }
@@ -205,8 +211,8 @@ class MapperTest {
         @Override public boolean isClosed() { return false; }
         @Override public void updateNString(int columnIndex, String nString) {}
         @Override public void updateNString(String columnLabel, String nString) {}
-        @Override public void updateNClob(int columnIndex, java.sql.Clob nClob) {}
-        @Override public void updateNClob(String columnLabel, java.sql.Clob nClob) {}
+        @Override public void updateNClob(int columnIndex, java.sql.NClob nClob) {}
+        @Override public void updateNClob(String columnLabel, java.sql.NClob nClob) {}
         @Override public java.sql.NClob getNClob(int columnIndex) { throw new UnsupportedOperationException(); }
         @Override public java.sql.NClob getNClob(String columnLabel) { throw new UnsupportedOperationException(); }
         @Override public java.sql.SQLXML getSQLXML(int columnIndex) { throw new UnsupportedOperationException(); }
@@ -248,7 +254,7 @@ class MapperTest {
         @Override public <T> T getObject(int columnIndex, Class<T> type) { throw new UnsupportedOperationException(); }
         @Override public <T> T getObject(String columnLabel, Class<T> type) { throw new UnsupportedOperationException(); }
         @Override public <T> T unwrap(Class<T> iface) { throw new UnsupportedOperationException(); }
-        @Override public boolean isWrapperFor(Class<T> iface) { return false; }
+        @Override public boolean isWrapperFor(Class<?> iface) { return false; }
     }
 
     // Fake PreparedStatement that records setObject calls
@@ -262,8 +268,11 @@ class MapperTest {
             params.put(parameterIndex, x);
         }
 
+        @Override public void clearParameters() {}
+
         // All other methods throw UnsupportedOperationException or return defaults
         @Override public java.sql.ResultSet executeQuery() { return null; }
+        @Override public java.sql.ResultSet executeQuery(String sql) { return null; }
         @Override public int executeUpdate() { return 0; }
         @Override public void close() {}
         @Override public int getMaxFieldSize() { return 0; }
@@ -308,7 +317,7 @@ class MapperTest {
         @Override public void closeOnCompletion() {}
         @Override public boolean isCloseOnCompletion() { return false; }
         @Override public <T> T unwrap(Class<T> iface) { throw new UnsupportedOperationException(); }
-        @Override public boolean isWrapperFor(Class<T> iface) { return false; }
+        @Override public boolean isWrapperFor(Class<?> iface) { return false; }
         @Override public void setNull(int parameterIndex, int sqlType) {}
         @Override public void setBoolean(int parameterIndex, boolean x) {}
         @Override public void setByte(int parameterIndex, byte x) {}
@@ -343,7 +352,6 @@ class MapperTest {
         @Override public java.sql.ParameterMetaData getParameterMetaData() { return null; }
         @Override public void setRowId(int parameterIndex, java.sql.RowId x) {}
         @Override public void setNString(int parameterIndex, String value) {}
-        @Override public void setNCharacterStream(int parameterIndex, java.io.Reader value, long length) {}
         @Override public void setNClob(int parameterIndex, java.sql.NClob value) {}
         @Override public void setClob(int parameterIndex, java.io.Reader reader, long length) {}
         @Override public void setBlob(int parameterIndex, java.io.InputStream inputStream, long length) {}
@@ -353,6 +361,7 @@ class MapperTest {
         @Override public void setObject(int parameterIndex, Object x, java.sql.SQLType targetSqlType) {}
         @Override public long executeLargeUpdate() { return 0; }
         @Override public void setAsciiStream(int parameterIndex, java.io.InputStream x) {}
+        @Override public void setUnicodeStream(int parameterIndex, java.io.InputStream x, int length) {}
         @Override public void setBinaryStream(int parameterIndex, java.io.InputStream x) {}
         @Override public void setBlob(int parameterIndex, java.io.InputStream inputStream) {}
         @Override public void setClob(int parameterIndex, java.io.Reader reader) {}
@@ -394,7 +403,7 @@ class MapperTest {
     @DisplayName("Mapper ignores fields without @Column annotation")
     void mapperIgnoresUnannotatedFields() throws SQLException {
         @Table(name = "items")
-        class ItemWithExtra {
+        static class ItemWithExtra {
             @Primary
             private int id;
             @Column(name = "name")
