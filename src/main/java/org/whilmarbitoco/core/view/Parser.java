@@ -17,128 +17,119 @@ public class Parser {
         List<Node> nodes = new ArrayList<>();
 
         while (lexer.getCurrentToken().type != TokenType.EOF) {
-            Token token = lexer.getCurrentToken();
-
-            switch (token.type) {
-                case TEXT:
-                    nodes.add(new TextNode(token.value));
-                    lexer.advance();
-                    break;
-
-                case VARIABLE:
-                    nodes.add(new VariableNode(token.value));
-                    lexer.advance();
-                    break;
-
-                case FOR:
-                    lexer.advance();
-                    String[] parts = token.value.split(",");
-                    String varName = parts[0].trim();
-                    String listName = parts[1].trim();
-                    List<Node> loopBody = parseLoopBody();
-                    nodes.add(new ForNode(varName, listName, loopBody));
-                    break;
-
-                case IF:
-                    lexer.advance();
-                    String condition = token.value.trim();
-                    List<Node> ifBody = parseIfBody();
-                    nodes.add(new IfNode(condition, ifBody));
-                    break;
-
-                default:
-                    lexer.advance();
-            }
+            nodes.add(parseNode());
         }
 
         return nodes;
     }
 
-    private List<Node> parseIfBody() {
-        List<Node> bodyNodes = new ArrayList<>();
+    private Node parseNode() {
+        Token token = lexer.getCurrentToken();
 
-        while (lexer.getCurrentToken().type != TokenType.ENDIF && lexer.getCurrentToken().type != TokenType.EOF) {
-            Token token = lexer.getCurrentToken();
+        switch (token.type) {
+            case TEXT:
+                lexer.advance();
+                return new TextNode(token.value);
 
-            switch (token.type) {
-                case TEXT:
-                    bodyNodes.add(new TextNode(token.value));
-                    lexer.advance();
-                    break;
+            case VARIABLE:
+                lexer.advance();
+                return new VariableNode(token.value);
 
-                case VARIABLE:
-                    bodyNodes.add(new VariableNode(token.value));
-                    lexer.advance();
-                    break;
+            case FOR:
+                return parseFor();
 
-                case FOR:
-                    String[] parts = token.value.split(",");
-                    String varName = parts[0].trim();
-                    String listName = parts[1].trim();
-                    lexer.advance();
-                    List<Node> nestedLoopBody = parseLoopBody();
-                    bodyNodes.add(new ForNode(varName, listName, nestedLoopBody));
-                    break;
+            case IF:
+                return parseIf();
 
-                case IF:
-                    lexer.advance();
-                    String condition = token.value.trim();
-                    List<Node> ifBody = parseIfBody();
-                    bodyNodes.add(new IfNode(condition, ifBody));
-                    break;
-
-                case ENDIF:
-                    return bodyNodes;
-
-                default:
-                    lexer.advance();
-            }
+            default:
+                lexer.advance();
+                return new TextNode("");
         }
-
-        return bodyNodes;
     }
 
-    private List<Node> parseLoopBody() {
+    private ForNode parseFor() {
+        String[] parts = lexer.getCurrentToken().value.split(",");
+        String varName = parts[0].trim();
+        String listName = parts[1].trim();
+        lexer.advance(); // consume FOR
+        List<Node> body = parseForBody();
+        return new ForNode(varName, listName, body);
+    }
+
+    private List<Node> parseForBody() {
         List<Node> bodyNodes = new ArrayList<>();
 
-        while (lexer.getCurrentToken().type != TokenType.ENDFOR && lexer.getCurrentToken().type != TokenType.EOF) {
-            Token token = lexer.getCurrentToken();
+        while (lexer.getCurrentToken().type != TokenType.ENDFOR
+                && lexer.getCurrentToken().type != TokenType.EMPTY
+                && lexer.getCurrentToken().type != TokenType.EOF) {
+            bodyNodes.add(parseNode());
+        }
 
-            switch (token.type) {
-                case TEXT:
-                    bodyNodes.add(new TextNode(token.value));
-                    lexer.advance();
-                    break;
-
-                case VARIABLE:
-                    bodyNodes.add(new VariableNode(token.value));
-                    lexer.advance();
-                    break;
-
-                case FOR:
-                    String[] parts = token.value.split(",");
-                    String varName = parts[0].trim();
-                    String listName = parts[1].trim();
-                    lexer.advance();
-                    List<Node> nestedLoopBody = parseLoopBody();
-                    bodyNodes.add(new ForNode(varName, listName, nestedLoopBody));
-                    break;
-
-                case IF:
-                    lexer.advance();
-                    String condition = token.value.trim();
-                    List<Node> ifBody = parseIfBody();
-                    bodyNodes.add(new IfNode(condition, ifBody));
-                    break;
-
-                default:
-                    lexer.advance();
+        // Handle {% empty %} block
+        List<Node> emptyBody = null;
+        if (lexer.getCurrentToken().type == TokenType.EMPTY) {
+            lexer.advance();
+            emptyBody = new ArrayList<>();
+            while (lexer.getCurrentToken().type != TokenType.ENDFOR
+                    && lexer.getCurrentToken().type != TokenType.EOF) {
+                emptyBody.add(parseNode());
             }
         }
 
         if (lexer.getCurrentToken().type == TokenType.ENDFOR) {
             lexer.advance();
         }
+
+        if (emptyBody != null && !emptyBody.isEmpty()) {
+            bodyNodes.add(new EmptyMarkerNode(emptyBody));
+        }
+
         return bodyNodes;
+    }
+
+    private IfNode parseIf() {
+        String condition = lexer.getCurrentToken().value.trim();
+        lexer.advance(); // consume IF
+        List<Node> ifBody = new ArrayList<>();
+        List<IfNode.ElseIfBranch> elseIfBranches = new ArrayList<>();
+        List<Node> elseBody = null;
+
+        // Parse the if-true body
+        while (lexer.getCurrentToken().type != TokenType.ELSEIF
+                && lexer.getCurrentToken().type != TokenType.ELSE
+                && lexer.getCurrentToken().type != TokenType.ENDIF
+                && lexer.getCurrentToken().type != TokenType.EOF) {
+            ifBody.add(parseNode());
+        }
+
+        // Parse elseif chains
+        while (lexer.getCurrentToken().type == TokenType.ELSEIF) {
+            String elseIfCondition = lexer.getCurrentToken().value.trim();
+            lexer.advance();
+            List<Node> elseIfBody = new ArrayList<>();
+            while (lexer.getCurrentToken().type != TokenType.ELSEIF
+                    && lexer.getCurrentToken().type != TokenType.ELSE
+                    && lexer.getCurrentToken().type != TokenType.ENDIF
+                    && lexer.getCurrentToken().type != TokenType.EOF) {
+                elseIfBody.add(parseNode());
+            }
+            elseIfBranches.add(new IfNode.ElseIfBranch(elseIfCondition, elseIfBody));
+        }
+
+        // Parse else block
+        if (lexer.getCurrentToken().type == TokenType.ELSE) {
+            lexer.advance();
+            elseBody = new ArrayList<>();
+            while (lexer.getCurrentToken().type != TokenType.ENDIF
+                    && lexer.getCurrentToken().type != TokenType.EOF) {
+                elseBody.add(parseNode());
+            }
+        }
+
+        if (lexer.getCurrentToken().type == TokenType.ENDIF) {
+            lexer.advance();
+        }
+
+        return new IfNode(condition, ifBody, elseIfBranches, elseBody);
     }
 }

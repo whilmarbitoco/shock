@@ -22,6 +22,7 @@ public class Router {
         routes.put("POST", new HashMap<>());
         routes.put("DELETE", new HashMap<>());
         routes.put("PUT", new HashMap<>());
+        routes.put("PATCH", new HashMap<>());
     }
 
     public void get(String path, Class<?> func, String method) {
@@ -46,6 +47,14 @@ public class Router {
 
     public void put(String path, Class<?> func, String method, String... middleware) {
         registerRoute("PUT", path, func, method, middleware);
+    }
+
+    public void patch(String path, Class<?> func, String method) {
+        registerRoute("PATCH", path, func, method);
+    }
+
+    public void patch(String path, Class<?> func, String method, String... middleware) {
+        registerRoute("PATCH", path, func, method, middleware);
     }
 
     public void delete(String path, Class<?> func, String method) {

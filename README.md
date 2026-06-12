@@ -1,15 +1,16 @@
 # Shock — Java MVC Web Framework
 
-Shock is a from-scratch Java MVC framework. No servlet container, no Spring, no Netty. Raw `ServerSocket` with routing, middleware, a custom template engine, and an Active Record ORM — all in a single repo with one external dependency (MySQL Connector).
+Shock is a from-scratch Java MVC framework. No servlet container, no Spring, no Netty. Raw `ServerSocket` with routing, middleware, a custom template engine, and an Active Record ORM — all in a single repo with zero required external dependencies.
 
 ## Feature Summary
 
 - **HTTP Server**: Raw `ServerSocket` with multi-threaded request handling. Parses request line, headers, and body manually.
-- **Routing**: Register `GET`, `POST`, `PUT`, `DELETE` routes with method references. URI query parameter parsing included.
-- **Controllers**: Extend `Core.Controller`, define static handler methods that accept `Request` and `Response`.
+- **Routing**: Register `GET`, `POST`, `PUT`, `PATCH`, `DELETE` routes with method references. URI path parameters (`:id`) and query parameter parsing included.
+- **Controllers**: Extend `Controller`, define static handler methods that accept `Request` and `Response`.
 - **Middleware**: Global and named middleware pipeline. Apply by name to specific routes.
-- **Template Engine**: Hand-written lexer and recursive descent parser. Supports `{{variable}}`, `{% if condition %}`, `{% for var in list %}`. Layout-based — views inject into a base template.
-- **Database**: `DBConnection`, query `Builder`, `Repository`, `Mapper`, and `EntityManager`. Table/Column/Primary annotations for model mapping.
+- **Template Engine**: Hand-written lexer and recursive descent parser. Supports `{{variable}}`, `{% if condition %}`, `{% else %}`, `{% elseif condition %}`, `{% for var in list %}`, `{% empty %}`. Layout-based — views inject into a base template.
+- **Database**: `DBConnection` with built-in connection pool, query `Builder`, `Repository`, `Mapper`, `EntityManager`, and `RelationManager`. Table/Column/Primary/BelongsTo/HasMany annotations for model mapping. Dialect-aware — supports MySQL, PostgreSQL, and SQLite.
+- **Migrations**: `MigrationGenerator` creates dialect-aware CREATE TABLE SQL. `MigrationRunner` applies versioned migration files.
 - **Session**: `SessionManager` with session middleware for automatic session handling.
 - **MIME Types**: Built-in content type mappings via `MimeType` utility.
 
@@ -39,7 +40,8 @@ src/main/java/org/whilmarbitoco/
 │   │   ├── Request.java               # URI, params, headers, body
 │   │   ├── Response.java              # Status, headers, body output
 │   │   ├── Middleware.java            # Interface
-│   │   └── MimeType.java              # Content-type mappings
+│   │   ├── MimeType.java              # Content-type mappings
+│   │   └── StaticFileHandler.java     # Static file serving
 │   ├── router/
 │   │   ├── Router.java                # Route matching and resolution
 │   │   ├── RouteHandler.java          # Handler metadata
@@ -53,12 +55,19 @@ src/main/java/org/whilmarbitoco/
 │   │   ├── Token.java / TokenType.java
 │   │   └── node/                      # AST nodes: Text, Variable, If, For
 │   ├── database/
-│   │   ├── DBConnection.java          # Connection manager
+│   │   ├── DBConnection.java          # Connection manager with built-in pool
 │   │   ├── Builder.java               # Query builder
 │   │   ├── Repository.java            # Generic repository
 │   │   ├── Mapper.java                # ResultSet to object mapping
 │   │   ├── EntityManager.java         # Entity operations
-│   │   ├── Table.java / Column.java / Primary.java  # Annotations
+│   │   ├── RelationManager.java       # Relationship eager loading
+│   │   ├── MigrationGenerator.java    # Dialect-aware migration SQL generator
+│   │   ├── MigrationRunner.java       # Versioned migration runner
+│   │   ├── Dialect.java               # Dialect interface
+│   │   ├── MySQLDialect.java          # MySQL dialect
+│   │   ├── PostgreSQLDialect.java     # PostgreSQL dialect
+│   │   ├── SQLiteDialect.java         # SQLite dialect
+│   │   ├── Table.java / Column.java / Primary.java / BelongsTo.java / HasMany.java
 │   │   └── QueryResult.java
 │   ├── session/
 │   │   └── SessionManager.java
@@ -68,7 +77,6 @@ src/main/java/org/whilmarbitoco/
 │   │   └── DefaultExceptionHandler.java
 │   └── utils/
 │       ├── Config.java                # Loads config.properties
-│       ├── File.java                  # File read utility
 │       └── Error.java                 # Stack trace formatting
 ├── registry/
 │   ├── Routes.java                    # Route definitions
@@ -96,7 +104,7 @@ src/main/java/org/whilmarbitoco/
 ### Prerequisites
 - Java 24
 - Maven 3.x
-- MySQL 8.x (for the sample app)
+- A JDBC driver for your database (MySQL, PostgreSQL, or SQLite)
 
 ### 1. Clone
 ```bash
@@ -107,44 +115,36 @@ cd shock
 ### 2. Configure
 Edit `src/main/resources/config.properties`:
 ```properties
-db.url=jdbc:mysql://localhost:3306/your_db
-db.user=your_user
-db.password=your_password
+# Database — uncomment the driver profile in pom.xml for your database
+db.url=jdbc:mysql://localhost:3306/mydb
+db.user=root
+db.password=secret
+db.pool.size=5
+db.debug=false
+
+# Server
 server.port=8080
+
+# View
 view.template=template.html
 ```
 
 ### 3. Build
 ```bash
-mvn clean compile
+# Activate the database driver profile (mysql, postgresql, or sqlite)
+mvn compile -P mysql
 ```
 
-### 4. Run
-```bash
-mvn exec:java -Dexec.mainClass="org.whilmarbitoco.Main"
-```
-Or compile and run manually:
-```bash
-javac -d out -cp "src/main/java:$(mvn dependency:build-classpath -q -DincludeScope=compile -Dmdep.outputFile=/dev/stdout)" $(find src/main/java -name "*.java")
-java -cp "out:$(mvn dependency:build-classpath -q -DincludeScope=compile -Dmdep.outputFile=/dev/stdout)" org.whilmarbitoco.Main
-```
-
-The server starts on the configured port (default `8080`).
-
----
-
-## Usage
-
-### Define Routes
+### 4. Define Routes
 
 `src/main/java/org/whilmarbitoco/registry/Routes.java`:
 ```java
 public class Routes extends RouteRegistry {
     @Override
     public void register() {
-        router.get("/", IndexController.class, "get");
-        router.get("/todo", TodoController.class, "viewTodo");
-        router.post("/todo", TodoController.class, "addTodo");
+        router.get("/", IndexController.class, "index");
+        router.get("/users/:id", UserController.class, "show");
+        router.patch("/users/:id", UserController.class, "update");
     }
 }
 ```
@@ -171,7 +171,7 @@ public class Middlewares extends MiddlewareRegistry {
 
 ```java
 public class IndexController extends Controller {
-    public static String get(Request request, Response response) {
+    public static String index(Request request, Response response) {
         return view().render("index.html", Map.of("name", "World"));
     }
 }
@@ -188,6 +188,8 @@ public class IndexController extends Controller {
     <h1>Hello, {{name}}!</h1>
     {% if name %}
         <p>Welcome back.</p>
+    {% else %}
+        <p>Please log in.</p>
     {% endif %}
 </body>
 </html>
@@ -203,17 +205,57 @@ The default layout (`template.html`) wraps views via `{{content}}` injection. Ov
 |--------|-------------|
 | `{{variable}}` | Output a context variable |
 | `{% if condition %}` | Conditional block |
+| `{% elseif condition %}` | Else-if branch |
+| `{% else %}` | Else branch |
 | `{% endif %}` | Close conditional |
 | `{% for item in list %}` | Loop over a collection |
+| `{% empty %}` | Rendered when the loop collection is empty |
 | `{% endfor %}` | Close loop |
+
+---
+
+## Configuration Reference
+
+All keys in `config.properties`:
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `db.url` | — | JDBC URL (e.g. `jdbc:mysql://localhost:3306/mydb`) |
+| `db.user` | — | Database username |
+| `db.password` | — | Database password |
+| `db.pool.size` | `5` | Connection pool size |
+| `db.debug` | `false` | Enable SQL debug logging |
+| `server.port` | — | HTTP server port |
+| `view.template` | — | Default layout template filename |
+
+---
+
+## Database Driver Profiles
+
+Shock does not bundle a JDBC driver. Activate one via Maven profile:
+
+| Profile | Dependency |
+|---------|------------|
+| `-P mysql` | MySQL Connector/J 8.3.0 |
+| `-P postgresql` | PostgreSQL JDBC 42.7.3 |
+| `-P sqlite` | SQLite JDBC 3.45.1.0 |
+
+Example:
+```bash
+mvn test -P sqlite
+```
 
 ---
 
 ## Tech Stack
 
 - **Java 24** (Maven)
-- **MySQL Connector 8.0.33** (only external dependency)
+- **Zero required external dependencies** (JDBC driver activated via profile)
 - No servlet container, no third-party frameworks
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for build instructions, coding conventions, and how to add new dialects or middleware.
 
 ## License
 

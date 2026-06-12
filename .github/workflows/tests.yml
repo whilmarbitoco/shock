@@ -20,5 +20,12 @@ jobs:
           distribution: temurin
           java-version: 24
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: mvn test -B -P sqlite
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: target/site/jacoco/
