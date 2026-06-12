@@ -19,7 +19,6 @@ public class Parser {
         while (lexer.getCurrentToken().type != TokenType.EOF) {
             Token token = lexer.getCurrentToken();
 
-
             switch (token.type) {
                 case TEXT:
                     nodes.add(new TextNode(token.value));
@@ -89,7 +88,6 @@ public class Parser {
                     break;
 
                 case ENDIF:
-                    // End of the current IF block
                     return bodyNodes;
 
                 default:
@@ -103,16 +101,20 @@ public class Parser {
     private List<Node> parseLoopBody() {
         List<Node> bodyNodes = new ArrayList<>();
 
-        while (lexer.getCurrentToken().type != TokenType.ENDFOR) {
+        while (lexer.getCurrentToken().type != TokenType.ENDFOR && lexer.getCurrentToken().type != TokenType.EOF) {
             Token token = lexer.getCurrentToken();
 
             switch (token.type) {
                 case TEXT:
                     bodyNodes.add(new TextNode(token.value));
+                    lexer.advance();
                     break;
+
                 case VARIABLE:
                     bodyNodes.add(new VariableNode(token.value));
+                    lexer.advance();
                     break;
+
                 case FOR:
                     String[] parts = token.value.split(",");
                     String varName = parts[0].trim();
@@ -121,15 +123,22 @@ public class Parser {
                     List<Node> nestedLoopBody = parseLoopBody();
                     bodyNodes.add(new ForNode(varName, listName, nestedLoopBody));
                     break;
-                case IF:
-                    break;
-            }
 
-            lexer.advance();
+                case IF:
+                    lexer.advance();
+                    String condition = token.value.trim();
+                    List<Node> ifBody = parseIfBody();
+                    bodyNodes.add(new IfNode(condition, ifBody));
+                    break;
+
+                default:
+                    lexer.advance();
+            }
         }
 
-        lexer.advance();
+        if (lexer.getCurrentToken().type == TokenType.ENDFOR) {
+            lexer.advance();
+        }
         return bodyNodes;
     }
-
 }

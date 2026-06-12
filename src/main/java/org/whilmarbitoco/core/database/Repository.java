@@ -143,7 +143,9 @@ public abstract class Repository<T> {
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setObject(1, id);
-            System.out.println("QUERY:: " + stmt.toString());
+            if (Config.debug()) {
+                System.out.println("QUERY:: " + stmt.toString());
+            }
             stmt.execute();
 
         } catch (SQLException err) {
@@ -158,7 +160,9 @@ public abstract class Repository<T> {
             for (int i = 0; i < values.length; i++) {
                 stmt.setObject(i + 1, values[i]);
             }
-            System.out.println("QUERY:: " + stmt.toString());
+            if (Config.debug()) {
+                System.out.println("QUERY:: " + stmt.toString());
+            }
             stmt.execute();
 
         } catch (SQLException err) {
@@ -170,7 +174,9 @@ public abstract class Repository<T> {
         String query = builder.delete(tableName).build();
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            System.out.println("QUERY:: " + stmt.toString());
+            if (Config.debug()) {
+                System.out.println("QUERY:: " + stmt.toString());
+            }
             stmt.execute();
 
         } catch (SQLException err) {

@@ -1,8 +1,11 @@
 package org.whilmarbitoco.core.http;
-import org.whilmarbitoco.core.utils.Error;
-import org.whilmarbitoco.core.view.View;
+
 import org.whilmarbitoco.core.exception.HttpException;
 import org.whilmarbitoco.core.router.Router;
+import org.whilmarbitoco.core.registry.MiddlewareRegistry;
+import org.whilmarbitoco.core.view.View;
+import org.whilmarbitoco.core.utils.Error;
+import org.whilmarbitoco.exception.InternalServerException;
 
 import java.io.*;
 import java.net.*;
@@ -21,9 +24,7 @@ public class Server {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-
             System.out.println("Server started on port " + port);
-
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 new Thread(() -> handleClient(clientSocket)).start();
@@ -58,15 +59,15 @@ public class Server {
             Response response = new Response();
 
             try {
-//                Read headers
                 request.setParams(params);
                 String line;
                 while ((line = in.readLine()) != null && !line.isEmpty()) {
-                    String[] header = decode(line).split(":");
-                    request.addHeader(header[0], header[1]);
+                    String[] header = decode(line).split(":", 2);
+                    if (header.length == 2) {
+                        request.addHeader(header[0].trim(), header[1].trim());
+                    }
                 }
 
-//                Ready Body
                 String content = request.getHeader("Content-Length");
                 int contentLength = Integer.parseInt((content == null ? "0" : content).trim());
                 StringBuilder body = new StringBuilder();
@@ -104,5 +105,4 @@ public class Server {
     protected String decode(String str) {
         return URLDecoder.decode(str, StandardCharsets.UTF_8);
     }
-
 }

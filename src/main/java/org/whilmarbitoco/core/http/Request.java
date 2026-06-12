@@ -1,9 +1,9 @@
 package org.whilmarbitoco.core.http;
 
 import org.whilmarbitoco.core.exception.HttpException;
-import org.whilmarbitoco.core.session.SessionManager;
 import org.whilmarbitoco.exception.InternalServerException;
 import org.whilmarbitoco.exception.NotFoundException;
+import org.whilmarbitoco.database.model.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +15,7 @@ public class Request {
     private final Map<String, Object> body = new HashMap<>();
 
     private String shockSession;
+    private User auth;
     private final String method;
     private final String path;
 
@@ -24,29 +25,38 @@ public class Request {
     }
 
     public void setParams(String uriParam) throws HttpException {
-        if (uriParam.isEmpty()) return;
+        if (uriParam == null || uriParam.isEmpty()) return;
         String[] paramPair = uriParam.split("&");
 
         try {
             for (String pairs : paramPair) {
-                String[] pair = pairs.split("=");
-                params.putIfAbsent(pair[0], pair[1]);
+                String[] pair = pairs.split("=", 2);
+                if (pair.length == 2) {
+                    params.putIfAbsent(pair[0], pair[1]);
+                }
             }
         } catch (Exception e) {
             throw new NotFoundException("Parameter key not found");
         }
     }
 
-    public void setBody(String[] params) {
-        if (params.length < 1) return;
+    public void setRouteParam(String key, String value) {
+        params.put(key, value);
+    }
 
-       try {
-           for (String param : params) {
-               String[] p = param.split("=");
-               body.putIfAbsent(p[0], p[1]);
-           }
-       } catch (Exception e) {
-       }
+    public void setBody(String[] params) {
+        if (params == null || params.length < 1) return;
+
+        try {
+            for (String param : params) {
+                String[] p = param.split("=", 2);
+                if (p.length == 2) {
+                    body.putIfAbsent(p[0], p[1]);
+                }
+            }
+        } catch (Exception e) {
+            throw new InternalServerException("Failed to parse request body: " + e.getMessage());
+        }
     }
 
     public String getShockSession() {
@@ -55,6 +65,14 @@ public class Request {
 
     public void setShockSession(String shockSession) {
         this.shockSession = shockSession;
+    }
+
+    public User getAuth() {
+        return auth;
+    }
+
+    public void setAuth(User auth) {
+        this.auth = auth;
     }
 
     public Object getParam(String key) {
@@ -99,8 +117,6 @@ public class Request {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         headers.forEach((key, value) -> sb.append(key).append(":").append(value).append("\n"));
-
-        // Remove trailing space
         return sb.toString().trim();
     }
 }

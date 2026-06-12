@@ -8,31 +8,30 @@ import org.whilmarbitoco.database.model.User;
 import org.whilmarbitoco.database.repository.TokenRepository;
 import org.whilmarbitoco.database.repository.UserRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public class AuthMiddleware implements Middleware {
-    public static User auth;
 
-    private final TokenRepository TOKEN = new TokenRepository();
-    private final UserRepository USER = new UserRepository();
+    private final TokenRepository tokenRepository = new TokenRepository();
+    private final UserRepository userRepository = new UserRepository();
 
     @Override
     public void handle(Request request, Response response) {
         String token = Request.getCookie(request, "user-auth");
 
-        if (token == null) response.redirect("/login");
+        if (token == null) {
+            response.redirect("/login");
+            return;
+        }
 
-        Optional<Token> tok = TOKEN.findWhere("token", "=", token).stream().findFirst();
+        Optional<Token> tok = tokenRepository.findWhere("token", "=", token).stream().findFirst();
 
-        if (tok.isEmpty()) response.redirect("/login");
+        if (tok.isEmpty()) {
+            response.redirect("/login");
+            return;
+        }
 
-        tok.ifPresent(t -> {
-            if (AuthMiddleware.auth == null) {
-                Optional<User> user = USER.findWhere("id", "=", t.getUserID())
-                        .stream().findFirst();
-                user.ifPresent(e -> AuthMiddleware.auth = e);
-            }
-        });
+        Optional<User> user = userRepository.findWhere("id", "=", tok.get().getUserID()).stream().findFirst();
+        user.ifPresent(request::setAuth);
     }
 }

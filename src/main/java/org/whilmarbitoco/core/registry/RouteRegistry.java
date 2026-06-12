@@ -4,9 +4,14 @@ import org.whilmarbitoco.core.router.Router;
 
 public abstract class RouteRegistry {
 
-    protected final Router router = new Router();
+    protected Router router;
 
     public RouteRegistry() {
+        // No-op; router must be set via setRouter() before register() is called
+    }
+
+    public void setRouter(Router router) {
+        this.router = router;
         register();
     }
 
