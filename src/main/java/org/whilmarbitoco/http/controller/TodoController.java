@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 public class TodoController extends Controller {
-    private final TodoRepository TODO = new TodoRepository();
+    private final TodoRepository todoRepo = new TodoRepository();
 
     public String viewTodo(Request req, Response res) {
+        // Eager-load the user relationship on each todo
+        List<Todo> todos = todoRepo.with("user").findWhere("user_id", "=", 1);
 
         Map<String, Object> context = new HashMap<>();
-
-        List<Todo> todos = TODO.findWhere("user_id", "=", 1);
         if (!todos.isEmpty()) {
-            context.put("todos", todos.stream().map(Todo::getTodo).toList());
+            context.put("todos", todos);
         }
 
         return view().render("todo.html", context);
@@ -27,18 +27,14 @@ public class TodoController extends Controller {
 
     public String addTodo(Request req, Response res) {
         String todo = (String) req.getBody("todo");
-
-        TODO.create(new Todo(todo, 1));
-
+        todoRepo.create(new Todo(todo, 1));
         res.redirect("/todo", 302);
         return view().render("rendered");
     }
 
     public String deleteTodo(Request req, Response res) {
         String todo = (String) req.getBody("todo");
-
-        TODO.deleteWhere("todo = ?", todo);
-
+        todoRepo.deleteWhere("todo = ?", todo);
         return res.redirect("/todo", 302).toString();
     }
 }

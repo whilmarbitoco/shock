@@ -1,8 +1,8 @@
 package org.whilmarbitoco.database.model;
 
-import org.whilmarbitoco.core.database.Column;
-import org.whilmarbitoco.core.database.Primary;
-import org.whilmarbitoco.core.database.Table;
+import org.whilmarbitoco.core.database.*;
+
+import java.util.List;
 
 @Table(name = "users")
 public class User {
@@ -20,6 +20,8 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @HasMany(foreignKey = "user_id", referencedTable = "todos", referencedColumn = "id")
+    private List<Todo> todos;
 
     public User() {}
 
@@ -29,36 +31,14 @@ public class User {
         this.password = password;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public List<Todo> getTodos() { return todos; }
+    public void setTodos(List<Todo> todos) { this.todos = todos; }
 }
-

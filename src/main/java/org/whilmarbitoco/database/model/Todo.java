@@ -1,9 +1,6 @@
 package org.whilmarbitoco.database.model;
 
-
-import org.whilmarbitoco.core.database.Column;
-import org.whilmarbitoco.core.database.Primary;
-import org.whilmarbitoco.core.database.Table;
+import org.whilmarbitoco.core.database.*;
 
 @Table(name = "todos")
 public class Todo {
@@ -18,6 +15,9 @@ public class Todo {
     @Column(name = "user_id")
     private int userID;
 
+    @BelongsTo(foreignKey = "user_id", referencedTable = "users", referencedColumn = "id")
+    private User user;
+
     public Todo() {}
 
     public Todo(String todo, int userID) {
@@ -25,27 +25,12 @@ public class Todo {
         this.userID = userID;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTodo() {
-        return todo;
-    }
-
-    public void setTodo(String todo) {
-        this.todo = todo;
-    }
-
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getTodo() { return todo; }
+    public void setTodo(String todo) { this.todo = todo; }
+    public int getUserID() { return userID; }
+    public void setUserID(int userID) { this.userID = userID; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

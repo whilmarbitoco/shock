@@ -10,7 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Base repository for CRUD operations with relationship support.
+ *
+ * Usage:
+ * <pre>
+ *   User user = userRepo.with("todos").findByID(1);
+ *   // user.getTodos() is populated automatically
+ *
+ *   List&lt;User&gt; users = userRepo.with("todos").findAll();
+ *   // each user.getTodos() is populated with one query (N+1 safe)
+ * </pre>
+ */
 public abstract class Repository<T> {
 
     protected EntityManager<T> entityManager;
@@ -18,19 +29,54 @@ public abstract class Repository<T> {
     protected Mapper<T> mapper;
     protected String tableName;
     protected List<String> columns;
+    private RelationManager relationManager;
+    private String[] eagerLoadFields;
 
     public Repository(Class<T> type) {
         this.entityManager = new EntityManager<>(type);
         this.builder = new Builder();
-        this.mapper = new Mapper<>(type);
+        this.mapper = new Mapper(type);
         this.tableName = entityManager.getTable();
         this.columns = entityManager.getColumns();
+    }
+
+    /**
+     * Set the RelationManager. Called lazily on first use if not set.
+     */
+    private void ensureRelationManager() {
+        if (relationManager == null) {
+            relationManager = new RelationManager(connection());
+        }
+    }
+
+    /**
+     * Eager-load the given relation fields on the result of the next find/findAll/findWhere call.
+     * Example: userRepo.with("todos").findByID(1)
+     */
+    public Repository<T> with(String... relationFields) {
+        this.eagerLoadFields = relationFields;
+        return this;
+    }
+
+    private void applyEagerLoad(T entity) {
+        if (entity == null || eagerLoadFields == null || eagerLoadFields.length == 0) return;
+        ensureRelationManager();
+        relationManager.eagerLoad(entity, eagerLoadFields);
+        eagerLoadFields = null;
+    }
+
+    private void applyEagerLoadAll(List<T> entities) {
+        if (entities == null || entities.isEmpty() || eagerLoadFields == null || eagerLoadFields.length == 0) return;
+        ensureRelationManager();
+        relationManager.eagerLoadAll(entities, eagerLoadFields);
+        eagerLoadFields = null;
     }
 
     private Connection connection() {
         return DBConnection.getConnection();
     }
 
+    // ── CRUD ──────────────────────────────────────────────────────
 
     public final void create(T entity) {
         entityManager.validate(entity);
@@ -40,9 +86,10 @@ public abstract class Repository<T> {
 
     public List<T> findAll() {
         String query = builder.select(tableName).build();
-
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
-            return executeQuery(stmt).list();
+            List<T> results = executeQuery(stmt).list();
+            applyEagerLoadAll(results);
+            return results;
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -50,15 +97,15 @@ public abstract class Repository<T> {
 
     public Optional<T> findByID(int id) {
         Optional<String> primaryKey = entityManager.getPrimaryKey();
-
         if (primaryKey.isEmpty())
-            throw new RuntimeException("[Repository] Empty primary key for " + entityManager.getTable());
+            throw new RuntimeException("[Repository] Empty primary key for " + tableName);
 
         String query = builder.select(tableName).where(primaryKey.get() + " = ?").build();
-
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, id);
-            return Optional.ofNullable(executeQuery(stmt).firstResult());
+            T result = executeQuery(stmt).firstResult();
+            applyEagerLoad(result);
+            return Optional.ofNullable(result);
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -69,10 +116,11 @@ public abstract class Repository<T> {
         entityManager.isValidCondition(condition);
 
         String query = builder.select(tableName).where(column + " " + condition + " ?").build();
-
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, value);
-            return executeQuery(stmt).list();
+            List<T> results = executeQuery(stmt).list();
+            applyEagerLoadAll(results);
+            return results;
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -81,13 +129,10 @@ public abstract class Repository<T> {
     public List<T> rawWhere(String condition, Object... value) {
         String query = builder.select(tableName).where(condition).build();
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
-
             for (int i = 0; i < value.length; i++) {
                 stmt.setObject(i + 1, value[i]);
             }
-
             return executeQuery(stmt).list();
-
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -95,13 +140,10 @@ public abstract class Repository<T> {
 
     public List<T> Raw(String query, Object... value) {
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
-
             for (int i = 0; i < value.length; i++) {
                 stmt.setObject(i + 1, value[i]);
             }
-
             return executeQuery(stmt).list();
-
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -111,9 +153,19 @@ public abstract class Repository<T> {
         entityManager.isValidColumn(column);
 
         String query = builder.select(tableName).where(column).like("?").build();
-
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, "%" + value + "%");
+            List<T> results = executeQuery(stmt).list();
+            applyEagerLoadAll(results);
+            return results;
+        } catch (SQLException err) {
+            throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
+        }
+    }
+
+    public List<T> paginate(int page, int pageSize) {
+        String query = builder.select(tableName).limit(pageSize).offset((page - 1) * pageSize).build();
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             return executeQuery(stmt).list();
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
@@ -122,33 +174,24 @@ public abstract class Repository<T> {
 
     public void update(T entity) {
         Optional<String> primaryKey = entityManager.getPrimaryKey();
-
         if (primaryKey.isEmpty())
-            throw new RuntimeException("[Repository] Empty primary key for " + entityManager.getTable());
+            throw new RuntimeException("[Repository] Empty primary key for " + tableName);
 
         Object pkValue = entityManager.getPrimaryKeyValue(entity);
-
         String query = builder.update(tableName, columns)
                 .where(primaryKey.get() + " = " + pkValue).build();
-
         execute(entity, query);
     }
 
     public void delete(int id) {
         Optional<String> primaryKey = entityManager.getPrimaryKey();
-
         if (primaryKey.isEmpty())
-            throw new RuntimeException("[Repository] Empty primary key for " + entityManager.getTable());
+            throw new RuntimeException("[Repository] Empty primary key for " + tableName);
 
         String query = builder.delete(tableName).where(primaryKey.get() + " = ?").build();
-
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, id);
-            if (Config.debug()) {
-                System.out.println("QUERY:: " + stmt.toString());
-            }
             stmt.execute();
-
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -156,16 +199,11 @@ public abstract class Repository<T> {
 
     public void deleteWhere(String condition, Object... values) {
         String query = builder.delete(tableName).where(condition).build();
-
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
             for (int i = 0; i < values.length; i++) {
                 stmt.setObject(i + 1, values[i]);
             }
-            if (Config.debug()) {
-                System.out.println("QUERY:: " + stmt.toString());
-            }
             stmt.execute();
-
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -173,13 +211,8 @@ public abstract class Repository<T> {
 
     public void deleteAll() {
         String query = builder.delete(tableName).build();
-
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
-            if (Config.debug()) {
-                System.out.println("QUERY:: " + stmt.toString());
-            }
             stmt.execute();
-
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
@@ -188,7 +221,7 @@ public abstract class Repository<T> {
     public int max() {
         Optional<String> key = entityManager.getPrimaryKey();
         if (key.isEmpty())
-            throw new RuntimeException("[Repository] Empty primary key for " + entityManager.getTable());
+            throw new RuntimeException("[Repository] Empty primary key for " + tableName);
 
         String query = builder.max(key.get(), tableName).build();
         try (PreparedStatement stmt = connection().prepareStatement(query)) {
@@ -196,7 +229,6 @@ public abstract class Repository<T> {
             if (rs.next()) {
                 return rs.getInt("count");
             }
-
             return 0;
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
@@ -216,37 +248,26 @@ public abstract class Repository<T> {
         }
     }
 
-    public List<T> paginate(int page, int pageSize) {
-        String query = builder.select(tableName).limit(pageSize).offset((page - 1) * pageSize).build();
-        try (PreparedStatement stmt = connection().prepareStatement(query)) {
-            return executeQuery(stmt).list();
-        } catch (SQLException err) {
-            throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
-        }
-    }
-    }
+    // ── Internal ──────────────────────────────────────────────────
 
     protected QueryResult<T> executeQuery(PreparedStatement stmt) {
         try {
             List<T> result = new ArrayList<>();
-
             if (Config.debug()) {
                 System.out.println("QUERY:: " + stmt.toString());
             }
             ResultSet res = stmt.executeQuery();
-
             while (res.next()) {
                 result.add(mapper.toEntity(res));
             }
-
             return new QueryResult<>(result);
         } catch (SQLException err) {
-            throw new RuntimeException("[Repository] Failed to execute on table["+tableName+ "] due to -> " + err.getMessage());
+            throw new RuntimeException("[Repository] Failed to execute on table[" + tableName + "] due to -> " + err.getMessage());
         }
     }
 
     protected void execute(T entity, String query) {
-        try(PreparedStatement stmt = connection().prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             PreparedStatement pstmt = mapper.fromEntity(entity, stmt);
             if (Config.debug()) {
                 System.out.println("QUERY:: " + pstmt.toString());
@@ -256,5 +277,4 @@ public abstract class Repository<T> {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
         }
     }
-
 }
