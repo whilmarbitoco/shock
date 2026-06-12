@@ -16,10 +16,12 @@ public class Server {
 
     private final int port;
     private final Router router;
+    private final StaticFileHandler staticFileHandler;
 
     public Server(int port, Router router) {
         this.port = port;
         this.router = router;
+        this.staticFileHandler = new StaticFileHandler();
     }
 
     public void start() {
@@ -84,7 +86,11 @@ public class Server {
                     request.setBody(decodedBody.split("&"));
                 }
 
-                router.resolve(request, response);
+                if (uri.startsWith("/static/")) {
+                    staticFileHandler.handle(uri, response);
+                } else {
+                    router.resolve(request, response);
+                }
             } catch (HttpException e) {
                 View view = new View();
                 view.template("template/error.html");

@@ -1,5 +1,8 @@
 package org.whilmarbitoco.core.http;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -7,6 +10,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 public class Response {
+
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private final Map<String, String> headers = new HashMap<>();
     private final StringBuilder body = new StringBuilder();
@@ -25,6 +30,10 @@ public class Response {
         this.statusCode = statusCode;
     }
 
+    public int getStatus() {
+        return statusCode;
+    }
+
     public String getShockSession() {
         return shockSession;
     }
@@ -33,12 +42,12 @@ public class Response {
         this.shockSession = sessionID;
     }
 
-    public void setCookie(String name, String cookie) {
+    public void setCookie(String name, String value) {
         StringBuilder ck = new StringBuilder();
         ck.append("Set-Cookie:")
                 .append(name)
                 .append("=")
-                .append(cookie)
+                .append(value)
                 .append("; HttpOnly; Path=/")
                 .append("\r\n");
         this.cookie.append(ck.toString());
@@ -49,7 +58,7 @@ public class Response {
         String date = ZonedDateTime.now(TimeZone.getTimeZone("GMT").toZoneId())
                 .format(DateTimeFormatter.RFC_1123_DATE_TIME);
         headers.put("Date", date);
-        headers.put("Server", "wb2c0NET/1.0");
+        headers.put("Server", "Shock/1.0");
         headers.put("Connection", "close");
         headers.put("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.put("Pragma", "no-cache");
@@ -62,6 +71,18 @@ public class Response {
 
     public void send(String content) {
         body.append(content);
+        handled = true;
+    }
+
+    public void json(Object data) {
+        body.append(gson.toJson(data));
+        contentType(MimeType.JSON);
+        handled = true;
+    }
+
+    public void json(String rawJson) {
+        body.append(rawJson);
+        contentType(MimeType.JSON);
         handled = true;
     }
 
@@ -86,6 +107,10 @@ public class Response {
 
     public void setHeader(String key, String value) {
         headers.put(key, value);
+    }
+
+    public String getBody() {
+        return body.toString();
     }
 
     @Override
