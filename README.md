@@ -4,7 +4,7 @@ Shock is a from-scratch Java MVC framework. No servlet container, no Spring, no 
 
 ## Feature Summary
 
-![Shock landing page](https://raw.githubusercontent.com/whilmarbitoco/shock/main/src/main/resources/public/img/screenshot-landing.png)
+![Shock landing page](src/main/resources/public/img/screenshot-landing.jpeg)
 
 - **HTTP Server**: Raw `ServerSocket` with multi-threaded request handling. Parses request line, headers, and body manually.
 - **Routing**: Register `GET`, `POST`, `PUT`, `PATCH`, `DELETE` routes with method references. URI path parameters (`:id`) and query parameter parsing included.

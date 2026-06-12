@@ -18,9 +18,7 @@ public class TodoController extends Controller {
         List<Todo> todos = todoRepo.with("user").findWhere("user_id", "=", 1);
 
         Map<String, Object> context = new HashMap<>();
-        if (!todos.isEmpty()) {
-            context.put("todos", todos);
-        }
+        context.put("todos", todos != null ? todos : List.of());
 
         return view().render("todo.html", context);
     }

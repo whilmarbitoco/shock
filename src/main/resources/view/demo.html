@@ -7,27 +7,27 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
         .demo-nav{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
-        .demo-nav a{padding:.4rem .85rem;border-radius:999px;font-size:.8rem;font-weight:500;background:var(--bg-code);color:var(--text-muted);border:1px solid var(--border);text-decoration:none}
+        .demo-nav a{padding:.35rem .75rem;border-radius:999px;font-size:.78rem;font-weight:500;background:var(--bg-subtle);color:var(--text-secondary);border:1px solid var(--border-light);text-decoration:none;transition:all .15s}
         .demo-nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
         .demo-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden}
-        .demo-section-header{background:var(--bg-code);padding:.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+        .demo-section-header{background:var(--bg-subtle);padding:.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
         .demo-section-header h2{font-size:1rem;font-weight:600;color:var(--text-heading)}
-        .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+        .badge{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
         .badge-get{background:#dcfce7;color:#166534}.badge-post{background:#dbeafe;color:#1e40af}
         .badge-put{background:#fef3c7;color:#92400e}.badge-delete{background:#fee2e2;color:#991b1b}
         .badge-patch{background:#f3e8ff;color:#6b21a8}
         .demo-section-body{padding:1.25rem}
-        .demo-section-body p{font-size:.9rem;color:var(--text-muted);margin-bottom:.75rem}
+        .demo-section-body p{font-size:.9rem;color:var(--text-secondary);margin-bottom:.75rem}
         .demo-table{width:100%;border-collapse:collapse;font-size:.85rem}
-        .demo-table th{text-align:left;padding:.6rem .85rem;background:var(--bg-code);border-bottom:2px solid var(--border);font-weight:600;color:var(--text-heading)}
-        .demo-table td{padding:.6rem .85rem;border-bottom:1px solid var(--border-light);color:var(--text)}
+        .demo-table th{text-align:left;padding:.55rem .75rem;background:var(--bg-subtle);border-bottom:2px solid var(--border);font-weight:600;color:var(--text-heading)}
+        .demo-table td{padding:.55rem .75rem;border-bottom:1px solid var(--border-light);color:var(--text)}
         .demo-table tr:last-child td{border-bottom:none}
         .code-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.75rem}
-        .code-row pre{background:#1e1e2e;color:#cdd6f4;padding:1rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:.8rem;line-height:1.6;overflow-x:auto;margin:0}
-        .code-row-label{font-size:.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem}
-        .screenshot-block{background:var(--bg-code);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center}
-        .screenshot-block img{max-width:100%;border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);border:1px solid var(--border)}
-        .screenshot-block p{font-size:.78rem;color:var(--text-muted);margin-top:.5rem}
+        .code-row pre{background:var(--bg-code);color:#e6edf3;padding:1rem;border-radius:var(--radius);font-family:var(--font-mono);font-size:.8rem;line-height:1.6;overflow-x:auto;margin:0}
+        .code-row-label{font-size:.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem}
+        .screenshot-block{background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center}
+        .screenshot-block img{max-width:100%;border-radius:var(--radius-sm);border:1px solid var(--border)}
+        .screenshot-block p{font-size:.78rem;color:var(--text-secondary);margin-top:.5rem}
         @media(max-width:768px){.code-row{grid-template-columns:1fr}}
     </style>
 </head>
@@ -35,7 +35,7 @@
 
 <nav class="nav">
     <div class="nav-inner">
-        <a href="/" class="nav-brand">⚡ Shock</a>
+        <a href="/" class="nav-brand">Shock</a>
         <div class="nav-links">
             <a href="/">Home</a>
             <a href="/demo" style="color:var(--text)">Demo</a>
@@ -45,25 +45,26 @@
 </nav>
 
 <section class="hero" style="padding:3rem 1.5rem 2rem;">
-    <div class="hero-inner">
-        <h1 class="hero-title" style="font-size:2rem;">Live Demo</h1>
-        <p class="hero-desc" style="font-size:.95rem;margin-bottom:1rem;">
-            Every feature below is running on Shock right now — no mocks, no static HTML.
-        </p>
-        <div class="demo-nav">
-            <a href="#routing">Routing</a>
-            <a href="#templates">Templates</a>
-            <a href="#forms">Forms</a>
-            <a href="#orm">ORM</a>
-            <a href="#middleware">Middleware</a>
-            <a href="#screenshots">Screenshots</a>
+    <div class="hero-inner" style="grid-template-columns:1fr;text-align:center">
+        <div class="hero-text" style="align-items:center">
+            <h1 class="hero-title" style="font-size:2rem;">Live Demo</h1>
+            <p class="hero-desc" style="font-size:.95rem;margin-bottom:.5rem;max-width:600px;">
+                Every feature below is running on Shock right now — no mocks, no static HTML.
+            </p>
+            <div class="demo-nav">
+                <a href="#routing">Routing</a>
+                <a href="#templates">Templates</a>
+                <a href="#forms">Forms</a>
+                <a href="#orm">ORM</a>
+                <a href="#middleware">Middleware</a>
+                <a href="#screenshots">Screenshots</a>
+            </div>
         </div>
     </div>
 </section>
 
 <div style="max-width:900px;margin:0 auto;padding:0 1.5rem 4rem;">
 
-<!-- Routing -->
 <div id="routing" class="demo-section">
     <div class="demo-section-header">
         <span class="badge badge-get">GET</span>
@@ -111,7 +112,6 @@ router.patch("/users/{id}",
     </div>
 </div>
 
-<!-- Templates -->
 <div id="templates" class="demo-section">
     <div class="demo-section-header"><h2>Template Engine</h2></div>
     <div class="demo-section-body">
@@ -142,7 +142,7 @@ router.patch("/users/{id}",
     "items", itemList,
     "guest", false
 ));</code></pre>
-                <div class="code-row-label" style="margin-top:.75rem;">Lexer → Parser → AST → Render</div>
+                <div class="code-row-label" style="margin-top:.75rem;">Lexer to AST to Render</div>
                 <pre><code>Lexer lexer = new Lexer(template);
 Parser parser = new Parser(lexer);
 List&lt;Node&gt; nodes = parser.parse();
@@ -154,7 +154,6 @@ for (Node n : nodes)
     </div>
 </div>
 
-<!-- Forms -->
 <div id="forms" class="demo-section">
     <div class="demo-section-header">
         <span class="badge badge-post">POST</span>
@@ -191,7 +190,6 @@ for (Node n : nodes)
     </div>
 </div>
 
-<!-- ORM -->
 <div id="orm" class="demo-section">
     <div class="demo-section-header"><h2>Active Record ORM</h2></div>
     <div class="demo-section-body">
@@ -243,7 +241,6 @@ users.save(u);</code></pre>
     </div>
 </div>
 
-<!-- Middleware -->
 <div id="middleware" class="demo-section">
     <div class="demo-section-header"><h2>Middleware Pipeline</h2></div>
     <div class="demo-section-body">
@@ -273,7 +270,6 @@ users.save(u);</code></pre>
     </div>
 </div>
 
-<!-- Screenshots -->
 <div id="screenshots" class="demo-section">
     <div class="demo-section-header"><h2>Screenshots</h2></div>
     <div class="demo-section-body">
@@ -309,7 +305,7 @@ users.save(u);</code></pre>
 
 <footer class="footer">
     <div class="footer-inner">
-        <p>Shock Framework · Built by <a href="https://github.com/whilmarbitoco" target="_blank" rel="noopener">Whilmar Bitoco</a> · MIT License</p>
+        <p>Shock Framework &middot; Built by <a href="https://github.com/whilmarbitoco" target="_blank" rel="noopener">Whilmar Bitoco</a> &middot; MIT License</p>
     </div>
 </footer>
 </body>

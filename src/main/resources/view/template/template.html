@@ -3,94 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shock Framework - Default Template</title>
+    <title>Shock Framework</title>
+    <link rel="stylesheet" href="/static/css/style.css">
     <style>
         body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-image: linear-gradient(to bottom, #1a202c, #12171f);
-            background-color: #1a202c;
-            color: #f7fafc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Noto Sans, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #1f2328;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* Align items to the start (top) */
             min-height: 100vh;
-            padding-bottom: 2rem;
-            box-sizing: border-box;
         }
 
-        .container {
-            max-width: 95%;
-            width: 100%;
-            margin-top: 2rem; /* Add top margin to the main container */
-            padding: 2rem;
-            border-radius: 0.75rem;
-            background-color: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            box-sizing: border-box;
-            min-height: calc(100vh - 8rem); /* Adjust for header and footer */
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
+        .layout-header {
+            border-bottom: 1px solid #e8ecf0;
+            padding: 1.5rem 2rem;
             text-align: center;
-            padding: 2rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 2rem;
         }
 
-        header h1 {
-            font-size: 2.5rem;
+        .layout-header h1 {
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #f56565;
-            margin-bottom: 0.5rem;
+            color: #0d1117;
+            margin-bottom: .25rem;
         }
 
-        header p {
-            font-size: 1.1rem;
-            color: #e2e8f0;
-            font-weight: 300;
+        .layout-header p {
+            font-size: .875rem;
+            color: #656d76;
         }
 
-        main {
-            flex-grow: 1; /* Allow main to take up available vertical space */
-            padding-bottom: 2rem; /* Add padding before footer */
+        .layout-main {
+            flex: 1;
+            max-width: 960px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
         }
 
         #content {
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.7;
-            color: #e2e8f0;
+            color: #1f2328;
         }
 
-        footer {
+        .layout-footer {
+            border-top: 1px solid #e8ecf0;
+            padding: 1.5rem 2rem;
             text-align: center;
-            padding: 2rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 2rem; /* Add margin to push it away from main content */
-            font-size: 0.9rem;
-            color: #a0aec0;
+            font-size: .82rem;
+            color: #656d76;
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>Shock Framework</h1>
-    <p>A Modern Java Web Framework</p>
-</header>
+    <header class="layout-header">
+        <h1>Shock Framework</h1>
+        <p>A Modern Java Web Framework</p>
+    </header>
 
-<main>
-    <div id="content">
-        {{content}}
-    </div>
-</main>
+    <main class="layout-main">
+        <div id="content">
+            {{content}}
+        </div>
+    </main>
 
-<footer>
-    <p>&copy; {{year}} Shock Framework. All rights reserved.</p>
-</footer>
+    <footer class="layout-footer">
+        &copy; {{year}} Shock Framework. All rights reserved.
+    </footer>
 </body>
 </html>
