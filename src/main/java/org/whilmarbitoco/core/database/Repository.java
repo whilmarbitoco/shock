@@ -13,9 +13,6 @@ import java.util.Optional;
 
 public abstract class Repository<T> {
 
-    protected final Connection connection = DBConnection.getConnection();
-
-
     protected EntityManager<T> entityManager;
     protected Builder builder;
     protected Mapper<T> mapper;
@@ -30,6 +27,10 @@ public abstract class Repository<T> {
         this.columns = entityManager.getColumns();
     }
 
+    private Connection connection() {
+        return DBConnection.getConnection();
+    }
+
 
     public final void create(T entity) {
         entityManager.validate(entity);
@@ -40,7 +41,7 @@ public abstract class Repository<T> {
     public List<T> findAll() {
         String query = builder.select(tableName).build();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             return executeQuery(stmt).list();
         } catch (SQLException err) {
             throw new RuntimeException("[Repository] SQL Error:: " + err.getMessage());
@@ -55,7 +56,7 @@ public abstract class Repository<T> {
 
         String query = builder.select(tableName).where(primaryKey.get() + " = ?").build();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, id);
             return Optional.ofNullable(executeQuery(stmt).firstResult());
         } catch (SQLException err) {
@@ -69,7 +70,7 @@ public abstract class Repository<T> {
 
         String query = builder.select(tableName).where(column + " " + condition + " ?").build();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, value);
             return executeQuery(stmt).list();
         } catch (SQLException err) {
@@ -79,7 +80,7 @@ public abstract class Repository<T> {
 
     public List<T> rawWhere(String condition, Object... value) {
         String query = builder.select(tableName).where(condition).build();
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
 
             for (int i = 0; i < value.length; i++) {
                 stmt.setObject(i + 1, value[i]);
@@ -93,7 +94,7 @@ public abstract class Repository<T> {
     }
 
     public List<T> Raw(String query, Object... value) {
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
 
             for (int i = 0; i < value.length; i++) {
                 stmt.setObject(i + 1, value[i]);
@@ -111,7 +112,7 @@ public abstract class Repository<T> {
 
         String query = builder.select(tableName).where(column).like("?").build();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, "%" + value + "%");
             return executeQuery(stmt).list();
         } catch (SQLException err) {
@@ -141,7 +142,7 @@ public abstract class Repository<T> {
 
         String query = builder.delete(tableName).where(primaryKey.get() + " = ?").build();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             stmt.setObject(1, id);
             if (Config.debug()) {
                 System.out.println("QUERY:: " + stmt.toString());
@@ -156,7 +157,7 @@ public abstract class Repository<T> {
     public void deleteWhere(String condition, Object... values) {
         String query = builder.delete(tableName).where(condition).build();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             for (int i = 0; i < values.length; i++) {
                 stmt.setObject(i + 1, values[i]);
             }
@@ -173,7 +174,7 @@ public abstract class Repository<T> {
     public void deleteAll() {
         String query = builder.delete(tableName).build();
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             if (Config.debug()) {
                 System.out.println("QUERY:: " + stmt.toString());
             }
@@ -190,7 +191,7 @@ public abstract class Repository<T> {
             throw new RuntimeException("[Repository] Empty primary key for " + entityManager.getTable());
 
         String query = builder.max(key.get(), tableName).build();
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("count");
@@ -204,7 +205,7 @@ public abstract class Repository<T> {
 
     public int count() {
         String query = builder.count(tableName).build();
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection().prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("count");
@@ -236,7 +237,7 @@ public abstract class Repository<T> {
     }
 
     protected void execute(T entity, String query) {
-        try(PreparedStatement stmt = connection.prepareStatement(query)) {
+        try(PreparedStatement stmt = connection().prepareStatement(query)) {
             PreparedStatement pstmt = mapper.fromEntity(entity, stmt);
             if (Config.debug()) {
                 System.out.println("QUERY:: " + pstmt.toString());
